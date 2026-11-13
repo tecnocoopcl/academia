@@ -19,66 +19,66 @@
     "VCV Rack",
     "modular"
   ],
-  "url": "web/",
+  "url": "./",
   "cover": "portada.svg",
   "modules": [
     {
       "title": "Prólogo",
       "summary": "Por qué existe este curso. Hoy, a más de dos décadas de mi primer acercamiento con estos instrumentos, quiero construir esta guía –y otros artefactos complementarios– para devolver al mundo esa posibilidad de sentir lo que yo sentí.",
-      "url": "web/prologo.html"
+      "url": "prologo.html"
     },
     {
       "title": "Introducción",
       "summary": "Esta es una guía básica, pensada en tres artefactos para que puedas construir conocimientos: la guía en PDF, esta aplicación web y zinte, un sintetizador para VCV Rack.",
-      "url": "web/introduccion.html"
+      "url": "introduccion.html"
     },
     {
       "number": 1,
       "title": "Sound (el sonido)",
       "summary": "Cualquier sonido se describe con tres propiedades perceptuales: pitch (altura), timbre y loudness (volumen). Cada una corresponde a una magnitud física, y cada bloque del sintetizador actúa sobre una de ellas.",
-      "url": "web/1-sonido.html"
+      "url": "1-sonido.html"
     },
     {
       "number": 2,
       "title": "Synth architecture (arquitectura de un sintetizador)",
       "summary": "Cuatro bloques en el audio path (ruta de audio): oscillators, mixer, filter y VCA. Y dos tipos de modulators (moduladores) fuera de ella, envelopes y LFOs, que mueven los parámetros de los demás.",
-      "url": "web/2-arquitectura.html"
+      "url": "2-arquitectura.html"
     },
     {
       "number": 3,
       "title": "Oscillators & waveforms (osciladores y formas de onda)",
       "summary": "El oscillator (oscilador) fija el pitch, y su waveform fija el timbre inicial: el material con el que trabajan el filter y el resto de la cadena.",
-      "url": "web/3-osciladores.html"
+      "url": "3-osciladores.html"
     },
     {
       "number": 4,
       "title": "Ring modulation & mixer (modulación en anillo y mezclador)",
       "summary": "Dos maneras de combinar sources (fuentes): sumarlas en un mixer (conservan sus spectra) o multiplicarlas con un ring modulator (los reemplazan por otros).",
-      "url": "web/4-mixer.html"
+      "url": "4-mixer.html"
     },
     {
       "number": 5,
       "title": "Filter (el filtro)",
       "summary": "Da nombre a la síntesis sustractiva: parte de una fuente con muchos harmonics y resta parte de ellos. El parámetro principal es el cutoff (frecuencia de corte), el punto donde empieza la atenuación.",
-      "url": "web/5-filtro.html"
+      "url": "5-filtro.html"
     },
     {
       "number": 6,
       "title": "Envelopes & VCA (envolventes y amplificador)",
       "summary": "Los capítulos anteriores fijan el pitch y el timbre. Este trata cómo cambia la loudness (volumen) durante la nota con una envelope (envolvente) y un VCA (amplificador controlado por voltaje), y cómo el mismo mecanismo puede controlar otros parámetros.",
-      "url": "web/6-envolventes.html"
+      "url": "6-envolventes.html"
     },
     {
       "number": 7,
       "title": "LFOs (osciladores de baja frecuencia)",
       "summary": "Un low frequency oscillator (típicamente 0,1 a 20 Hz) que no suena por sí mismo: modula otros parámetros con un ciclo continuo, independiente de la duración de la nota.",
-      "url": "web/7-lfos.html"
+      "url": "7-lfos.html"
     },
     {
       "number": 8,
       "title": "Signal flow (el flujo de señal)",
       "summary": "Oscillators, noise y ring modulator llegan al mixer; la mezcla pasa por el filter (timbre) y luego por el VCA con su envelope (loudness). Envelopes y LFOs no transportan audio: son control signals (señales de control) que varían parámetros a lo largo de esa ruta.",
-      "url": "web/8-flujo.html"
+      "url": "8-flujo.html"
     }
   ],
   "classes": {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>7 · LFOs · Síntesis sustractiva</title>
+<title>2 · Synth architecture · Síntesis sustractiva</title>
 <meta name="description" content="Laboratorio interactivo para entender la síntesis sustractiva: sonido, osciladores, mixer, filtro, envolventes y LFOs, con audio en tu navegador.">
 <script>try { const t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -16,7 +16,7 @@
     <p class="marca">
       <a class="marca-academia" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 18c3-8 5-8 7 0s4 8 7 0 5-8 8 0"/></svg>academia</a>
       <span class="marca-sep" aria-hidden="true">/</span>
-      <a class="marca-curso" href="../">Síntesis sustractiva</a>
+      <a class="marca-curso" href="./">Síntesis sustractiva</a>
     </p>
     <label class="vol">Vol <input id="vol" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Volumen general"></label>
     <button id="theme" class="theme" type="button" aria-label="Switch theme (cambiar tema)">◐</button>
@@ -28,19 +28,18 @@
 
 <main class="wrap">
 
-<section class="mod" id="m7">
-  <div class="num">Capítulo 7 · Movimiento</div>
-  <h2>LFOs <span class="es">(osciladores de baja frecuencia)</span></h2>
-  <p class="lead">Un <b>low frequency oscillator</b> (típicamente 0,1 a 20 Hz) que no suena por sí mismo: modula otros parámetros con un ciclo continuo, independiente de la duración de la nota.</p>
+<section class="mod" id="m2">
+  <div class="num">Capítulo 2 · Mapa</div>
+  <h2>Synth architecture <span class="es">(arquitectura de un sintetizador)</span></h2>
+  <p class="lead">Cuatro bloques en el <b>audio path</b> (ruta de audio): oscillators, mixer, filter y VCA. Y dos tipos de <b>modulators</b> (moduladores) fuera de ella, envelopes y LFOs, que mueven los parámetros de los demás.</p>
   <div class="demos"></div>
-  <div class="callout"><b>Envelope vs. LFO.</b> La envelope produce una modulación única por nota; el LFO repite un ciclo sin parar. Combinados, una envelope sobre el <b>depth</b> (profundidad) del LFO produce un vibrato que aparece de a poco.</div>
 </section>
 
 <nav id="paso" class="paso" aria-label="Avanzar en el curso"></nav>
 
 </main>
 
-<footer><div class="wrap">Aplicación web del curso «Síntesis sustractiva en VCV Rack». <a href="../">Portada del curso</a> · <a href="../manual.pdf">Guía en PDF</a> · <a href="/">academia</a></div></footer>
+<footer><div class="wrap">Aplicación web del curso «Síntesis sustractiva en VCV Rack». <a href="manual.pdf">Guía en PDF</a> · <a href="/">academia</a></div></footer>
 
 <script src="curso.js"></script>
 <script src="core.js"></script>

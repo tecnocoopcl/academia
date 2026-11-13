@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>5 · Filter · Síntesis sustractiva</title>
+<title>8 · Signal flow · Síntesis sustractiva</title>
 <meta name="description" content="Laboratorio interactivo para entender la síntesis sustractiva: sonido, osciladores, mixer, filtro, envolventes y LFOs, con audio en tu navegador.">
 <script>try { const t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -16,7 +16,7 @@
     <p class="marca">
       <a class="marca-academia" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 18c3-8 5-8 7 0s4 8 7 0 5-8 8 0"/></svg>academia</a>
       <span class="marca-sep" aria-hidden="true">/</span>
-      <a class="marca-curso" href="../">Síntesis sustractiva</a>
+      <a class="marca-curso" href="./">Síntesis sustractiva</a>
     </p>
     <label class="vol">Vol <input id="vol" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Volumen general"></label>
     <button id="theme" class="theme" type="button" aria-label="Switch theme (cambiar tema)">◐</button>
@@ -28,19 +28,19 @@
 
 <main class="wrap">
 
-<section class="mod" id="m5">
-  <div class="num">Capítulo 5 · Timbre</div>
-  <h2>Filter <span class="es">(el filtro)</span></h2>
-  <p class="lead">Da nombre a la síntesis sustractiva: parte de una fuente con muchos harmonics y resta parte de ellos. El parámetro principal es el <b>cutoff</b> (frecuencia de corte), el punto donde empieza la atenuación.</p>
+<section class="mod" id="m8">
+  <div class="num">Capítulo 8 · Resumen</div>
+  <h2>Signal flow <span class="es">(el flujo de señal)</span></h2>
+  <p class="lead">Oscillators, noise y ring modulator llegan al mixer; la mezcla pasa por el filter (timbre) y luego por el VCA con su envelope (loudness). Envelopes y LFOs no transportan audio: son <b>control signals</b> (señales de control) que varían parámetros a lo largo de esa ruta.</p>
   <div class="demos"></div>
-  <div class="callout"><b>Low-pass</b> (pasa bajos) abierto = cutoff al máximo. <b>High-pass</b> (pasa altos) abierto = cutoff en cero. <b>Band-pass</b> (pasa banda) nunca deja pasar el spectrum completo. Cada <b>pole</b> (polo) aporta 6 dB/oct de <b>slope</b> (pendiente): 12 dB/oct = 2 poles, 24 dB/oct = 4 poles.</div>
+  <div class="callout"><b>Cómo aprender con un sintetizador.</b> 1) Parte de un sonido simple: sawtooth, filter abierto, envelope de órgano. 2) Cambia un parámetro a la vez y escucha qué propiedad cambia: pitch, timbre o loudness. 3) Agrega un modulator por vez: primero la filter envelope, después un LFO. 4) Analiza sonidos existentes: identifica la waveform, el filter y la envelope.</div>
 </section>
 
 <nav id="paso" class="paso" aria-label="Avanzar en el curso"></nav>
 
 </main>
 
-<footer><div class="wrap">Aplicación web del curso «Síntesis sustractiva en VCV Rack». <a href="../">Portada del curso</a> · <a href="../manual.pdf">Guía en PDF</a> · <a href="/">academia</a></div></footer>
+<footer><div class="wrap">Aplicación web del curso «Síntesis sustractiva en VCV Rack». <a href="manual.pdf">Guía en PDF</a> · <a href="/">academia</a></div></footer>
 
 <script src="curso.js"></script>
 <script src="core.js"></script>

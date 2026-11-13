@@ -24,7 +24,7 @@ Publicado en https://academia.tecnocooperativa.cl
 `src/tema.css` es una copia del tema de espacio (ADR-034); se actualiza
 copiándolo desde la SDK.
 
-El curso de síntesis (`cursos/sintesis-basica/web/`) nació de `zinte/web`
+El curso de síntesis (`cursos/sintesis-basica/`) nació de `zinte/web`
 y ya es su propia versión: una página por sección (`curso.js` tiene el orden,
 el menú, la barra de progreso y el «Siguiente»), una prueba entre el
 capítulo 1 y el 2 (`prueba-1.html`, `prueba.js`), el prólogo y la

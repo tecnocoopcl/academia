@@ -39,7 +39,8 @@ const PAGINAS = [
     nav.append(a);
   });
   // que el capítulo actual quede a la vista en pantallas angostas
-  nav.querySelector('.on')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  const on = nav.querySelector('.on');
+  if (on) nav.scrollLeft = Math.max(0, on.offsetLeft - nav.offsetLeft - (nav.clientWidth - on.offsetWidth) / 2);
 
   /* barra de progreso: dónde estás en el curso, no cuánto has hecho */
   const fraccion = i / (total - 1);
