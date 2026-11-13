@@ -6,11 +6,10 @@
   <title>Síntesis sustractiva en VCV Rack · academia</title>
   <meta name="description" content="Curso abierto de síntesis sustractiva: de la arquitectura de un sintetizador a su versión modular en VCV Rack, cable por cable.">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <!-- Si el curso se muda a su propio dominio, usar las URL completas:
-       https://academia.tecnocooperativa.cl/kit/academia.css y …/academia-kit.js -->
+  <!-- Si el curso se muda a su propio dominio, usar la URL completa:
+       https://academia.tecnocooperativa.cl/kit/academia.css -->
   <link rel="stylesheet" href="/kit/academia.css">
   <link rel="stylesheet" href="./curso.css">
-  <script type="module" src="/kit/academia-kit.js"></script>
 </head>
 <body>
   <main class="ac-pagina">
@@ -30,10 +29,15 @@
     <p>El curso son tres artefactos que van juntos: la <strong>guía</strong>, con los contenidos y sus imágenes, que puedes leer en línea o descargar en PDF; una <strong>aplicación web</strong> donde cada capítulo trae un laboratorio con un sintetizador para escuchar y mover cada parámetro mientras lees; y <strong>zinte</strong>, un sintetizador para VCV Rack que une todos estos conceptos.</p>
 
     <p class="acciones">
-      <a class="ac-boton" href="guia/#prologo">Empezar por el prólogo</a>
-      <a class="ac-boton secundario" href="guia/">Abrir la guía interactiva</a>
-      <a class="ac-boton secundario" href="manual.pdf" download>Descargar el manual (PDF)</a>
+      <a class="ac-boton" href="guia/">Ir al curso</a>
     </p>
+
+    <section class="clases ac-nota" aria-labelledby="t-clases">
+      <h2 id="t-clases">Clases conmigo</h2>
+      <p>Todo el material es libre: puedes leerlo, descargarlo y compartirlo. Si quieres avanzar acompañado, resolver dudas o armar tu propio patch, puedo hacerte clases.</p>
+      <p><a class="ac-boton" href="/catalogo/sintesis-basica">Pedir una clase</a></p>
+      <p>Si quieres conocer más de lo que hago, visita <a href="https://aebn.cl" rel="author">aebn.cl</a>.</p>
+    </section>
 
     <p>El orden es el de un manual de sintetizador: fuente → mezcla → filtrado → contorno → modulación → control → efectos. Cada capítulo tiene el concepto, su equivalente en VCV (módulos y cableado) y un patch de práctica. Los módulos son los de VCV Fundamental y plugins gratuitos de la VCV Library.</p>
 
@@ -55,19 +59,6 @@
       <li><a href="guia/#cap-11"><span class="num">11</span>Apéndice: índice de módulos</a> <span>Referencia</span></li>
     </ol>
 
-    <h2>Si recién empiezas</h2>
-    <p>Si nunca has pensado en un sonido como una onda, parte por <a href="capitulos/pitch.html">el pitch</a>: un capítulo previo corto con una perilla y un osciloscopio, sobre qué es la frecuencia y por qué la música se cuenta en octavas.</p>
-
-    <div class="ac-laboratorio" aria-label="Prueba rápida">
-      <div class="ac-controles">
-        <ac-perilla etiqueta="Pitch" min="55" max="1760" valor="220" escala="log" unidad="Hz" for="osc-portada" atributo="frecuencia"></ac-perilla>
-        <ac-oscilador id="osc-portada" forma="sawtooth"></ac-oscilador>
-      </div>
-      <ac-osciloscopio for="osc-portada" ventana="20"></ac-osciloscopio>
-    </div>
-
-    <h2>Clases</h2>
-    <p>El material es libre: puedes leerlo, descargarlo y compartirlo. Si quieres ir más allá, puedes <a href="/catalogo/sintesis-basica">pedir una clase con el profe</a>. Y si quieres conocer más de lo que hago, visita <a href="https://aebn.cl" rel="author">aebn.cl</a>.</p>
   </main>
 </body>
 </html>

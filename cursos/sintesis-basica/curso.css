@@ -13,3 +13,5 @@ td:first-child, th:first-child { padding-left: 0; }
 .prologo { margin: 0 0 2rem; padding: 0.25rem 0 0.25rem 1.25rem; border-left: 3px solid var(--esp-accent); font-size: 1.1rem; font-style: italic; }
 .prologo p { margin: 0 0 0.75rem; }
 .prologo footer { font-style: normal; font-size: 0.95rem; color: var(--esp-text-muted); }
+.clases { margin: 2rem 0; }
+.clases h2 { margin-top: 0; }
