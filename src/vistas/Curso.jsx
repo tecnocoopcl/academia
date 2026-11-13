@@ -51,11 +51,6 @@ export default function Curso({ id, catalogo }) {
                 Ir al curso
               </a>
             )}
-            {curso.pdf && (
-              <a className="boton secundario" href={curso.pdf}>
-                Descargar el PDF
-              </a>
-            )}
             {!disponible && <p className="nota-estado">Este curso todavía se está preparando. Vuelve pronto.</p>}
           </div>
         </div>
@@ -65,6 +60,27 @@ export default function Curso({ id, catalogo }) {
       <div className="ficha-cuerpo">
         <div>
           {curso.description && <p>{curso.description}</p>}
+          {curso.modules.length > 0 && (
+            <section aria-labelledby="t-modulos">
+              <h2 id="t-modulos">Módulos</h2>
+              <ol className="modulos">
+                {curso.modules.map((m) => (
+                  <li key={m.url}>
+                    <details>
+                      <summary>
+                        <span className="modulo-num">{m.number ?? '··'}</span>
+                        {m.title}
+                      </summary>
+                      <div className="modulo-cuerpo">
+                        {m.summary && <p>{m.summary}</p>}
+                        {disponible && <a href={m.url}>Ir al módulo</a>}
+                      </div>
+                    </details>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
           {curso.kit && (
             <>
               <h2>Kit</h2>

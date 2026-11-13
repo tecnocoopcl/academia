@@ -15,6 +15,14 @@ export default function TarjetaCurso({ curso }) {
           <span>{curso.teacher.name}</span>
           <span aria-hidden="true">·</span>
           <span>{curso.formats.map((f) => FORMATO[f]).join(', ')}</span>
+          {curso.modules.length > 0 && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>
+                {curso.modules.length} {curso.modules.length === 1 ? 'módulo' : 'módulos'}
+              </span>
+            </>
+          )}
         </p>
       </div>
     </article>
@@ -30,6 +38,25 @@ export function Grilla({ cursos }) {
         </li>
       ))}
     </ul>
+  )
+}
+
+export function ListaModulos({ cursos }) {
+  return (
+    <ol className="lista-modulos">
+      {cursos.flatMap((c) =>
+        c.modules.map((m) => (
+          <li key={m.url}>
+            <span className="modulo-num">{m.number ?? '··'}</span>
+            <a href={m.url}>{m.title}</a>
+            <span className="modulo-curso">
+              de <Link href={`/catalogo/${c.id}`}>{c.title}</Link>
+            </span>
+            {m.summary && <p>{m.summary}</p>}
+          </li>
+        )),
+      )}
+    </ol>
   )
 }
 

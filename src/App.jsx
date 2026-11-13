@@ -4,10 +4,11 @@ import { useCatalogo } from './catalogo/useCatalogo.js'
 import Inicio from './vistas/Inicio.jsx'
 import Catalogo from './vistas/Catalogo.jsx'
 import Curso from './vistas/Curso.jsx'
+import Cuenta from './sesion/Cuenta.jsx'
 
 const REPO = 'https://github.com/tecnocoopcl/academia'
 
-export default function App() {
+export default function App({ sesion }) {
   const ruta = useRuta()
   const catalogo = useCatalogo()
 
@@ -27,9 +28,9 @@ export default function App() {
           </Link>
           <nav aria-label="Principal">
             <Link href="/catalogo" aria-current={ruta.vista !== 'inicio' ? 'page' : undefined}>Catálogo</Link>
-            <a href="/kit/demo.html">Kit</a>
             <Link href="/#dictar">Dictar un curso</Link>
           </nav>
+          <Cuenta sesion={sesion} />
         </div>
       </header>
 

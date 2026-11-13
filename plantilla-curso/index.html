@@ -4,31 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nombre del curso</title>
-  <!-- Opcional: estilos y componentes de academia. Puedes quitarlos y usar lo tuyo. -->
-  <link rel="stylesheet" href="https://academia.tecnocooperativa.cl/kit/academia.css">
-  <script type="module" src="https://academia.tecnocooperativa.cl/kit/academia-kit.js"></script>
+  <style>
+    body { max-width: 44rem; margin: 0 auto; padding: 2rem 1rem; font: 17px/1.6 system-ui, sans-serif; }
+  </style>
 </head>
 <body>
-  <main class="ac-pagina">
-    <nav class="ac-migas"><a href="https://academia.tecnocooperativa.cl">academia</a> › Nombre del curso</nav>
-    <header class="ac-cabecera">
-      <h1>Nombre del curso</h1>
-      <p class="ac-bajada">Qué se aprende aquí, en una frase.</p>
-    </header>
+  <main>
+    <p><a href="https://academia.tecnocooperativa.cl">academia</a></p>
+    <h1>Nombre del curso</h1>
+    <p>Qué se aprende aquí, en una frase.</p>
 
-    <p>Texto del curso. Usa <code>.ac-nota</code> para comentarios al margen, <code>.ac-ejercicio</code> para pruebas y <code>.ac-laboratorio</code> para agrupar controles.</p>
+    <h2>Por qué existe este curso</h2>
+    <p>Tu historia con el tema y qué quieres que se lleve quien lo tome.</p>
 
-    <div class="ac-nota"><p>Una nota al margen.</p></div>
-
-    <div class="ac-laboratorio">
-      <div class="ac-controles">
-        <ac-perilla etiqueta="Frecuencia" min="55" max="1760" valor="220" escala="log" unidad="Hz" for="osc" atributo="frecuencia"></ac-perilla>
-        <ac-oscilador id="osc"></ac-oscilador>
-      </div>
-      <ac-osciloscopio for="osc"></ac-osciloscopio>
-    </div>
-
-    <div class="ac-ejercicio"><p>Un ejercicio para quien lee.</p></div>
+    <h2>Contenido</h2>
+    <p>El curso, como quieras armarlo: texto, PDF, una aplicación, un video…</p>
   </main>
 </body>
 </html>

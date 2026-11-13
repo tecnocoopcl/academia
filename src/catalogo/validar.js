@@ -62,11 +62,28 @@ export function validarCurso(datos, base) {
     errores.push('`classes` debe ser un objeto')
   }
 
+  const modulos = []
+  if (d.modules !== undefined) {
+    if (!Array.isArray(d.modules)) errores.push('`modules` debe ser una lista')
+    else
+      d.modules.forEach((m, i) => {
+        const url = m && esTexto(m.url) ? resolver(m.url, base) : null
+        if (!m || !esTexto(m.title)) errores.push(`\`modules[${i}]\` necesita \`title\``)
+        else if (!url) errores.push(`\`modules[${i}].url\` no es una URL válida`)
+        else
+          modulos.push({
+            number: typeof m.number === 'number' || esTexto(m.number) ? String(m.number).trim() : null,
+            title: m.title.trim(),
+            summary: esTexto(m.summary) ? m.summary.trim() : '',
+            url,
+          })
+      })
+  }
+
   const urls = {}
   for (const [clave, valor] of [
     ['url', d.url],
     ['cover', d.cover],
-    ['pdf', d.pdf],
     ['calendar', d.classes?.calendar],
   ]) {
     if (valor === undefined) continue
@@ -95,8 +112,8 @@ export function validarCurso(datos, base) {
       topics: d.topics ? [...d.topics] : [],
       url: urls.url ?? null,
       cover: urls.cover ?? null,
-      pdf: urls.pdf ?? null,
       kit: esTexto(d.kit) ? d.kit.trim() : null,
+      modules: modulos,
       classes: d.classes
         ? {
             calendar: urls.calendar ?? null,

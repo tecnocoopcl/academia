@@ -26,7 +26,6 @@ idioma del curso. Lo valida `src/catalogo/validar.js`.
   "topics": ["sonido", "síntesis"],
   "url": "./",
   "cover": "portada.svg",
-  "pdf": "manual.pdf",
   "classes": {
     "calendar": "https://…/calendario/clases/",
     "duration": "60 min",
@@ -52,8 +51,8 @@ idioma del curso. Lo valida `src/catalogo/validar.js`.
 | `topics` | no | Lista de temas. |
 | `url` | si `available` | Dónde empieza el curso. |
 | `cover` | no | Imagen 16:9 para la tarjeta (SVG, PNG, JPG, WebP). |
-| `pdf` | no | Material descargable principal. |
 | `kit` | no | Texto: qué kit físico necesita el curso y dónde conseguirlo. |
+| `modules` | no | Lista de módulos del curso: `title`, `url` (obligatorios), `number` y `summary`. Van en orden; los que no llevan `number` (un prólogo, una introducción) se muestran sin numerar. Aparecen en la ficha como acordeón y en la vista «Módulos» del catálogo, que enlaza directo a cada uno. |
 | `classes` | no | Si el profe ofrece clases: `duration`, `price` (texto libre) y `calendar` (ver abajo). |
 
 Las URL pueden ser **relativas al propio `curso.json`** (`"./"`,

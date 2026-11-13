@@ -1,64 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Síntesis sustractiva en VCV Rack · academia</title>
-  <meta name="description" content="Curso abierto de síntesis sustractiva: de la arquitectura de un sintetizador a su versión modular en VCV Rack, cable por cable.">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <!-- Si el curso se muda a su propio dominio, usar la URL completa:
-       https://academia.tecnocooperativa.cl/kit/academia.css -->
-  <link rel="stylesheet" href="/kit/academia.css">
-  <link rel="stylesheet" href="./curso.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Síntesis sustractiva en VCV Rack · academia</title>
+<meta name="description" content="Curso abierto de síntesis sustractiva: de la arquitectura de un sintetizador a su versión modular en VCV Rack, cable por cable.">
+<script>try { const t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="web/style.css">
+<link rel="stylesheet" href="curso.css">
 </head>
 <body>
-  <main class="ac-pagina">
-    <nav class="ac-migas"><a href="/">academia</a> › <a href="/catalogo/sintesis-basica">ficha del curso</a></nav>
-
-    <header class="ac-cabecera">
-      <h1>Síntesis sustractiva en VCV Rack</h1>
-      <p class="ac-bajada">Fundamentos, de la arquitectura de un sintetizador a su versión modular, cable por cable.</p>
-    </header>
-
-    <blockquote class="prologo">
-      <p>Pero no fue hasta que compré el sintetizador Ultranova de Novation, por ahí por el 2016, que tuve acceso a una guía básica de sintetización, y eso me marcó. […] Por fin sentía que podía expresarme de mejor forma, más allá de reconfigurar un preset que me gustase.</p>
-      <p>Hoy […] quiero construir esta guía –y otros artefactos complementarios– para devolver al mundo esa posibilidad de sentir lo que yo sentí.</p>
-      <footer>— <a href="https://aebn.cl" rel="author">Alejandro</a>, <a href="guia/#prologo">del prólogo</a></footer>
-    </blockquote>
-
-    <p>El curso son tres artefactos que van juntos: la <strong>guía</strong>, con los contenidos y sus imágenes, que puedes leer en línea o descargar en PDF; una <strong>aplicación web</strong> donde cada capítulo trae un laboratorio con un sintetizador para escuchar y mover cada parámetro mientras lees; y <strong>zinte</strong>, un sintetizador para VCV Rack que une todos estos conceptos.</p>
-
-    <p class="acciones">
-      <a class="ac-boton" href="guia/">Ir al curso</a>
+<header class="top">
+  <div class="wrap fila">
+    <p class="marca">
+      <a class="marca-academia" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 18c3-8 5-8 7 0s4 8 7 0 5-8 8 0"/></svg>academia</a>
+      <span class="marca-sep" aria-hidden="true">/</span>
+      <a class="marca-curso" href="./" aria-current="page">Síntesis sustractiva</a>
     </p>
+  </div>
+</header>
+<main class="wrap">
 
-    <section class="clases ac-nota" aria-labelledby="t-clases">
-      <h2 id="t-clases">Clases conmigo</h2>
-      <p>Todo el material es libre: puedes leerlo, descargarlo y compartirlo. Si quieres avanzar acompañado, resolver dudas o armar tu propio patch, puedo hacerte clases.</p>
-      <p><a class="ac-boton" href="/catalogo/sintesis-basica">Pedir una clase</a></p>
-      <p>Si quieres conocer más de lo que hago, visita <a href="https://aebn.cl" rel="author">aebn.cl</a>.</p>
-    </section>
+<section class="hero">
+  <h1>Síntesis sustractiva en VCV Rack</h1>
+  <p>Fundamentos, de la arquitectura de un sintetizador a su versión modular, cable por cable.</p>
+</section>
 
-    <p>El orden es el de un manual de sintetizador: fuente → mezcla → filtrado → contorno → modulación → control → efectos. Cada capítulo tiene el concepto, su equivalente en VCV (módulos y cableado) y un patch de práctica. Los módulos son los de VCV Fundamental y plugins gratuitos de la VCV Library.</p>
+<blockquote class="prologo">
+  <p>Pero no fue hasta que compré el sintetizador Ultranova de Novation, por ahí por el 2016, que tuve acceso a una guía básica de sintetización, y eso me marcó. […] Por fin sentía que podía expresarme de mejor forma, más allá de reconfigurar un preset que me gustase.</p>
+  <p>Hoy […] quiero construir esta guía –y otros artefactos complementarios– para devolver al mundo esa posibilidad de sentir lo que yo sentí.</p>
+  <footer>— <a href="https://aebn.cl" rel="author">Alejandro</a>, <a href="web/prologo.html">del prólogo</a></footer>
+</blockquote>
 
-    <h2>Capítulos</h2>
-    <ol class="indice" start="0">
-      <li><a href="guia/#prologo"><span class="num">··</span>Prólogo</a> <span>Antes de empezar</span></li>
-      <li><a href="guia/#introduccion"><span class="num">··</span>Introducción</a> <span>Antes de empezar</span></li>
-      <li><a href="guia/#cap-0"><span class="num">00</span>Cómo usar esta guía</a> <span>Punto de partida</span></li>
-      <li><a href="guia/#cap-1"><span class="num">01</span>La voz sustractiva</a> <span>Arquitectura</span></li>
-      <li><a href="guia/#cap-2"><span class="num">02</span>Osciladores</a> <span>Fuente</span></li>
-      <li><a href="guia/#cap-3"><span class="num">03</span>Mixer y ring modulation</a> <span>Mezcla</span></li>
-      <li><a href="guia/#cap-4"><span class="num">04</span>Filtros</a> <span>Timbre</span></li>
-      <li><a href="guia/#cap-5"><span class="num">05</span>Envolventes</a> <span>Contorno</span></li>
-      <li><a href="guia/#cap-6"><span class="num">06</span>LFOs</a> <span>Movimiento</span></li>
-      <li><a href="guia/#cap-7"><span class="num">07</span>La matriz de modulación</a> <span>Control</span></li>
-      <li><a href="guia/#cap-8"><span class="num">08</span>Arpegiador y acordes</a> <span>Notas</span></li>
-      <li><a href="guia/#cap-9"><span class="num">09</span>Efectos</a> <span>Procesamiento</span></li>
-      <li><a href="guia/#cap-10"><span class="num">10</span>Patches de estudio</a> <span>Práctica</span></li>
-      <li><a href="guia/#cap-11"><span class="num">11</span>Apéndice: índice de módulos</a> <span>Referencia</span></li>
-    </ol>
+<p class="texto">El curso son tres artefactos que van juntos: la <b>guía</b>, con los contenidos y sus imágenes, en PDF; una <b>aplicación web</b> donde cada capítulo trae experimentos para escuchar y mover cada parámetro mientras lees; y <b>zinte</b>, un sintetizador para VCV Rack que une todos estos conceptos.</p>
 
-  </main>
+<p><a class="boton" href="web/">Ir al curso</a></p>
+
+<section class="card clases" aria-labelledby="t-clases">
+  <h2 id="t-clases">Clases conmigo</h2>
+  <p>Todo el material es libre: puedes leerlo, descargarlo y compartirlo. Si quieres avanzar acompañado, resolver dudas o armar tu propio patch, puedo hacerte clases.</p>
+  <p><a class="boton" href="/catalogo/sintesis-basica">Pedir una clase</a></p>
+  <p>Si quieres conocer más de lo que hago, visita <a href="https://aebn.cl" rel="author">aebn.cl</a>.</p>
+</section>
+
+<h2>Capítulos</h2>
+<ol class="indice">
+  <li><a href="web/prologo.html"><span class="n">··</span>Prólogo</a> <span>Antes de empezar</span></li>
+  <li><a href="web/introduccion.html"><span class="n">··</span>Introducción</a> <span>Antes de empezar</span></li>
+  <li><a href="web/1-sonido.html"><span class="n">1</span>Sound <span class="es">(el sonido)</span></a> <span>Fundamentos</span></li>
+  <li class="li-prueba"><a href="web/prueba-1.html"><span class="n">✓</span>Prueba 1 · El sonido</a> <span>Prueba</span></li>
+  <li><a href="web/2-arquitectura.html"><span class="n">2</span>Synth architecture <span class="es">(arquitectura de un sintetizador)</span></a> <span>Mapa</span></li>
+  <li><a href="web/3-osciladores.html"><span class="n">3</span>Oscillators &amp; waveforms <span class="es">(osciladores y formas de onda)</span></a> <span>Fuente</span></li>
+  <li><a href="web/4-mixer.html"><span class="n">4</span>Ring modulation &amp; mixer <span class="es">(modulación en anillo y mezclador)</span></a> <span>Mezcla</span></li>
+  <li><a href="web/5-filtro.html"><span class="n">5</span>Filter <span class="es">(el filtro)</span></a> <span>Timbre</span></li>
+  <li><a href="web/6-envolventes.html"><span class="n">6</span>Envelopes &amp; VCA <span class="es">(envolventes y amplificador)</span></a> <span>Contorno</span></li>
+  <li><a href="web/7-lfos.html"><span class="n">7</span>LFOs <span class="es">(osciladores de baja frecuencia)</span></a> <span>Movimiento</span></li>
+  <li><a href="web/8-flujo.html"><span class="n">8</span>Signal flow <span class="es">(el flujo de señal)</span></a> <span>Síntesis</span></li>
+  <li><a href="web/glosario.html"><span class="n">··</span>Glossary <span class="es">(glosario)</span></a> <span>Referencia</span></li>
+</ol>
+
+<p class="texto"><a href="manual.pdf" download>Descargar la guía en PDF</a></p>
+
+</main>
 </body>
 </html>

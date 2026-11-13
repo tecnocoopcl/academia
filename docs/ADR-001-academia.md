@@ -19,9 +19,8 @@ misma forma de curso.
    cura el catálogo en `cursos/registro.json` por PR. Es el mismo espíritu que
    el descubrimiento por dominio de espacio (ADR-008): el curso se anuncia a sí
    mismo; la cooperativa solo decide qué lista.
-3. **Kit opcional**: componentes como Web Components sin dependencias y CSS
-   sobre la paleta de espacio (ADR-034). Web Components porque los cursos
-   no comparten stack: sirven en HTML plano, Docusaurus o React.
+3. **Sin kit obligatorio ni compartido**: cada curso trae sus propias
+   herramientas. Academia solo recomienda la paleta de espacio (ADR-034).
 4. Mientras un curso no tenga sitio propio, se aloja en `cursos/<id>/` de este
    repo. Mudarlo es cambiar una URL del registro.
 5. **Dominio**: `academia.tecnocooperativa.cl`; cursos propios en
@@ -29,7 +28,7 @@ misma forma de curso.
 
 ## Fase 2: sesión y reserva de clases
 
-- **Conectar con WebID**, con el mismo patrón que música
+- **Conectar con WebID** (hecho: botón en la barra superior, `src/sesion/`), con el mismo patrón que música
   (`@inrupt/solid-client-authn-browser`) y, dentro de espacio, la SDK
   (ADR-004).
 - **Disponibilidad**: `classes.calendar` apunta a un calendario del pod del

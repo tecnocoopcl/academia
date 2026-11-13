@@ -67,3 +67,20 @@ test('todos los manifiestos del repo y la plantilla son válidos', () => {
   assert.deepEqual(enDisco.sort(), [...registro.courses].sort())
   assert.equal(validarCurso(JSON.parse(readFileSync('plantilla-curso/curso.json', 'utf8')), BASE).ok, true)
 })
+
+test('módulos: resuelve sus URLs y exige título y url', () => {
+  const r = validarCurso(
+    { ...minimo, modules: [{ title: ' Filtros ', summary: 'Timbre', url: 'web/#m5' }] },
+    BASE,
+  )
+  assert.equal(r.ok, true)
+  assert.deepEqual(r.curso.modules, [
+    { number: null, title: 'Filtros', summary: 'Timbre', url: 'https://academia.tecnocooperativa.cl/cursos/x/web/#m5' },
+  ])
+  assert.deepEqual(validarCurso(minimo, BASE).curso.modules, [])
+  const numerado = validarCurso({ ...minimo, modules: [{ number: 5, title: 'Filtros', url: 'a' }] }, BASE)
+  assert.equal(numerado.curso.modules[0].number, '5')
+  assert.match(validarCurso({ ...minimo, modules: {} }, BASE).errores.join(), /lista/)
+  assert.match(validarCurso({ ...minimo, modules: [{ url: 'a' }] }, BASE).errores.join(), /title/)
+  assert.match(validarCurso({ ...minimo, modules: [{ title: 'A' }] }, BASE).errores.join(), /url/)
+})

@@ -14,6 +14,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@inrupt/solid-client": "^1.23.1",
+    "@inrupt/solid-client-authn-browser": "^5.0.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

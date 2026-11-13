@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prólogo · Síntesis sustractiva</title>
+<meta name="description" content="Laboratorio interactivo para entender la síntesis sustractiva: sonido, osciladores, mixer, filtro, envolventes y LFOs, con audio en tu navegador.">
+<script>try { const t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap fila">
+    <p class="marca">
+      <a class="marca-academia" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 18c3-8 5-8 7 0s4 8 7 0 5-8 8 0"/></svg>academia</a>
+      <span class="marca-sep" aria-hidden="true">/</span>
+      <a class="marca-curso" href="../">Síntesis sustractiva</a>
+    </p>
+    <label class="vol">Vol <input id="vol" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Volumen general"></label>
+    <button id="theme" class="theme" type="button" aria-label="Switch theme (cambiar tema)">◐</button>
+    <button id="kill" class="kill" type="button">Mute</button>
+  </div>
+  <div class="wrap"><nav id="capitulos" aria-label="Capítulos"></nav></div>
+  <div class="wrap"><div id="progreso" class="progreso"></div></div>
+</header>
+
+<main class="wrap">
+
+<section class="mod" id="prologo">
+  <div class="num">Antes de empezar</div>
+  <h2>Prólogo</h2>
+  <div class="texto">
+  <p>Desde que tomé una guitarra por allá por los 2000 nunca más me separé de la música. Si bien gracias a mi papá estaba embebido en un modesto mundo musical (tenía una grabadora, y era contador de una radio AM en Vicuña, en Chile), pronto, con el advenimiento de los computadores en casa, descubrí diversos programas para poder grabar sonidos de forma digital. Diversas herramientas usé, como Audacity o Cubase; pero Fruity Loops –hoy llamado FL Studio– tenía algo más: ofrecía samples, efectos de sonido e instrumentos digitales, entre ellos el 3xOsc: un sintetizador. Desde ese entonces tuve una cercanía con los sintetizadores y el protocolo MIDI, que me permitía usar mi teclado de juguete, un Casio MA150, y poder hacer música electrónica, y bases para tocar guitarra encima. Pero no fue hasta que compré el sintetizador Ultranova de Novation, por ahí por el 2016, que tuve acceso a una guía básica de sintetización, y eso me marcó. Fue muy emocionante, y por eso lo recuerdo vivamente: por fin podía entender, ya no solo de manera intuitiva, un sintetizador, cómo funcionaba, cómo se interconectaban las distintas piezas, y por fin sentía que podía expresarme de mejor forma, más allá de reconfigurar un preset que me gustase.</p>
+  <p>Hoy, a más de dos décadas de ese primer acercamiento con estos instrumentos, quiero construir esta guía –y otros artefactos complementarios– para devolver al mundo esa posibilidad de sentir lo que yo sentí cuando pude entender lo que ya hacía de forma intuitiva, esa sensación de logro infinita que me abrió otras posibilidades, incluso en esos albores donde manipular un sintetizador parece programación (que es una actividad que disfruto mucho hoy en día, de una forma particularmente distinta, claro).</p>
+  <p>Espero de corazón que esta guía te entregue conceptos y conocimientos básicos para que puedas navegar en este hermoso mundo de la sintetización.</p>
+  <p class="firma"><a href="https://aebn.cl" rel="author">Alejandro</a>.</p>
+  <p class="es">Si quieres conocer más de lo que hago, visita <a href="https://aebn.cl" rel="author">aebn.cl</a>.</p>
+  </div>
+</section>
+
+<nav id="paso" class="paso" aria-label="Avanzar en el curso"></nav>
+
+</main>
+
+<footer><div class="wrap">Aplicación web del curso «Síntesis sustractiva en VCV Rack». <a href="../">Portada del curso</a> · <a href="../manual.pdf">Guía en PDF</a> · <a href="/">academia</a></div></footer>
+
+<script src="curso.js"></script>
+<script src="core.js"></script>
+<script src="modules-a.js"></script>
+<script src="modules-b.js"></script>
+<script src="synth.js"></script>
+<script>initChrome();</script>
+</body>
+</html>

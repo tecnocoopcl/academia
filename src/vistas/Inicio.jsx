@@ -38,7 +38,7 @@ export default function Inicio({ catalogo, repo }) {
           </li>
           <li>
             <h3>Cada curso a su manera</h3>
-            <p>No hay una plantilla obligatoria. Un curso de síntesis trae perillas y osciloscopios; uno de electrónica, un kit para la protoboard.</p>
+            <p>No hay una plantilla obligatoria. Un curso de síntesis trae su propio laboratorio de sonido; uno de electrónica, un kit para la protoboard.</p>
           </li>
           <li>
             <h3>Clases con el profe</h3>
@@ -55,7 +55,7 @@ export default function Inicio({ catalogo, repo }) {
           ficha.
         </p>
         <ol className="lista-numerada">
-          <li>Arma tu curso: una página estática, un PDF, un video… Si quieres, usa el <a href="/kit/demo.html">kit de componentes</a> y la paleta de la cooperativa.</li>
+          <li>Arma tu curso: una página estática, un PDF, un video… Si quieres, usa la paleta de la cooperativa.</li>
           <li>Publica junto a él un <code>curso.json</code> con título, resumen, formatos y cómo pedir clases.</li>
           <li>Propón un cambio a <code>cursos/registro.json</code> con la dirección de tu <code>curso.json</code>.</li>
         </ol>

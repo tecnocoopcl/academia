@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6 · Envelopes & VCA · Síntesis sustractiva</title>
+<meta name="description" content="Laboratorio interactivo para entender la síntesis sustractiva: sonido, osciladores, mixer, filtro, envolventes y LFOs, con audio en tu navegador.">
+<script>try { const t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap fila">
+    <p class="marca">
+      <a class="marca-academia" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 18c3-8 5-8 7 0s4 8 7 0 5-8 8 0"/></svg>academia</a>
+      <span class="marca-sep" aria-hidden="true">/</span>
+      <a class="marca-curso" href="../">Síntesis sustractiva</a>
+    </p>
+    <label class="vol">Vol <input id="vol" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Volumen general"></label>
+    <button id="theme" class="theme" type="button" aria-label="Switch theme (cambiar tema)">◐</button>
+    <button id="kill" class="kill" type="button">Mute</button>
+  </div>
+  <div class="wrap"><nav id="capitulos" aria-label="Capítulos"></nav></div>
+  <div class="wrap"><div id="progreso" class="progreso"></div></div>
+</header>
+
+<main class="wrap">
+
+<section class="mod" id="m6">
+  <div class="num">Capítulo 6 · Tiempo</div>
+  <h2>Envelopes &amp; VCA <span class="es">(envolventes y amplificador)</span></h2>
+  <p class="lead">Los capítulos anteriores fijan el pitch y el timbre. Este trata cómo cambia la loudness (volumen) durante la nota con una <b>envelope</b> (envolvente) y un <b>VCA</b> (amplificador controlado por voltaje), y cómo el mismo mecanismo puede controlar otros parámetros.</p>
+  <div class="demos"></div>
+  <div class="callout"><b>Combinación típica.</b> Envelope 1 en el VCA, envelope 2 en el cutoff. Con attack 0, decay corto y sustain bajo en la envelope 2, el filter se abre al inicio de cada nota y se cierra enseguida: sonido <b>pluck</b>.</div>
+</section>
+
+<nav id="paso" class="paso" aria-label="Avanzar en el curso"></nav>
+
+</main>
+
+<footer><div class="wrap">Aplicación web del curso «Síntesis sustractiva en VCV Rack». <a href="../">Portada del curso</a> · <a href="../manual.pdf">Guía en PDF</a> · <a href="/">academia</a></div></footer>
+
+<script src="curso.js"></script>
+<script src="core.js"></script>
+<script src="modules-a.js"></script>
+<script src="modules-b.js"></script>
+<script src="synth.js"></script>
+<script>initChrome();</script>
+</body>
+</html>

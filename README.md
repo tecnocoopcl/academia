@@ -9,7 +9,6 @@ Las decisiones están en [ADR-001](docs/ADR-001-academia.md).
 Publicado en https://academia.tecnocooperativa.cl
 
 - `/` portada · `/catalogo` · `/catalogo/<id>` ficha de un curso
-- `/kit/` componentes y estilos para cursos ([demo](kit/demo.html))
 - `/cursos/<id>/` cursos alojados aquí mientras no tengan sitio propio
 
 ## Estructura
@@ -19,12 +18,19 @@ Publicado en https://academia.tecnocooperativa.cl
 | `src/` | El sitio (Vite + React, JS plano) |
 | `cursos/registro.json` | Lista curada de cursos (URL de cada `curso.json`) |
 | `cursos/<id>/` | Manifiesto y, si se aloja aquí, el curso mismo |
-| `kit/` | Web Components (`<ac-perilla>`, `<ac-oscilador>`, `<ac-osciloscopio>`, `<ac-opciones>`) y `academia.css`. Se sirven tal cual, sin compilar |
 | `plantilla-curso/` | Punto de partida para un curso nuevo |
 | `docs/` | [Especificación de `curso.json`](docs/ESPECIFICACION-curso.md), [guía de diseño](docs/GUIA-diseno.md), ADR |
 
-`kit/tema.css` es una copia del tema de espacio (ADR-034); se actualiza
+`src/tema.css` es una copia del tema de espacio (ADR-034); se actualiza
 copiándolo desde la SDK.
+
+El curso de síntesis (`cursos/sintesis-basica/web/`) nació de `zinte/web`
+y ya es su propia versión: una página por sección (`curso.js` tiene el orden,
+el menú, la barra de progreso y el «Siguiente»), una prueba entre el
+capítulo 1 y el 2 (`prueba-1.html`, `prueba.js`), el prólogo y la
+introducción, la marca de academia y su paleta con acento amarillo. Los
+experimentos (`core.js`, `modules-*.js`, `synth.js`) son los de zinte, con
+un `if (!sec) return` para correr solo en la página de su capítulo.
 
 ## Sumar un curso
 
@@ -46,7 +52,7 @@ Queda en http://localhost:5186.
 | `npm run dev` | Servidor de desarrollo |
 | `npm test` | Pruebas con `node --test` |
 | `npm run lint` | oxlint |
-| `npm run build` | Compila en `dist/` (copia `kit/` y `cursos/` tal cual) |
+| `npm run build` | Compila en `dist/` (copia `cursos/` tal cual) |
 
 ## Despliegue
 

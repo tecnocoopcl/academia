@@ -1,4 +1,4 @@
-@import '../kit/tema.css';
+@import './tema.css';
 
 /* Sitio de academia: portada, catálogo y fichas. Usa solo tokens de espacio. */
 
@@ -180,3 +180,37 @@ code { font-family: var(--esp-mono); font-size: 0.9em; background: var(--esp-bg-
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Módulos: en la ficha y como vista del catálogo */
+.modulos, .lista-modulos { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--esp-border); max-width: 48rem; }
+.modulos li, .lista-modulos li { border-bottom: 1px solid var(--esp-border); }
+.lista-modulos li { padding: 0.75rem 0; }
+.lista-modulos > li > a { font-weight: 600; }
+.lista-modulos p, .modulo-cuerpo p { margin: 0.25rem 0 0; color: var(--esp-text-muted); font-size: 0.95rem; }
+.modulo-num { display: inline-block; min-width: 2rem; font-family: var(--esp-mono, ui-monospace, monospace); color: var(--esp-text-muted); }
+.modulos summary { cursor: pointer; padding: 0.7rem 0; font-weight: 600; list-style: none; display: flex; align-items: baseline; }
+.modulos summary::-webkit-details-marker { display: none; }
+.modulos summary::after { content: '+'; margin-left: auto; padding-left: 1rem; color: var(--esp-text-muted); font-weight: 400; }
+.modulos details[open] summary::after { content: '−'; }
+.modulos summary:hover { color: var(--esp-accent); }
+.modulo-cuerpo { padding: 0 0 0.9rem 2rem; }
+.modulo-cuerpo a { display: inline-block; margin-top: 0.5rem; font-weight: 600; }
+.modulo-curso { margin-left: 0.5rem; font-size: 0.85rem; color: var(--esp-text-muted); }
+
+/* Sesión con WebID */
+.barra nav { margin-left: auto; }
+.boton { font: inherit; font-weight: 600; cursor: pointer; }
+.boton:disabled { opacity: 0.6; cursor: progress; }
+.boton.chico { min-height: 2.1rem; padding: 0 0.85rem; font-size: 0.9rem; }
+.cuenta-sesion { display: flex; align-items: center; gap: 0.6rem; }
+.cuenta-nombre { font-size: 0.9rem; color: var(--esp-text-muted); max-width: 14rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cuenta-extra { margin-left: 0.3em; }
+@media (max-width: 520px) { .cuenta-extra { display: none; } }
+.dialogo { width: min(30rem, calc(100vw - 2rem)); padding: 1.5rem; border: 1px solid var(--esp-border); border-radius: var(--esp-radius-control); background: var(--esp-bg-elevated); color: var(--esp-text); }
+.dialogo::backdrop { background: rgb(0 0 0 / 0.45); }
+.dialogo h2 { margin: 0 0 0.75rem; font-size: 1.25rem; }
+.dialogo p { margin: 0 0 1rem; color: var(--esp-text-muted); }
+.dialogo label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.35rem; }
+.dialogo input { width: 100%; font: inherit; padding: 0.5rem 0.65rem; border: 1px solid var(--esp-border-control); border-radius: var(--esp-radius-control); background: var(--esp-bg); color: var(--esp-text); }
+.dialogo-error { color: var(--esp-danger) !important; margin-top: 0.75rem !important; }
+.dialogo-acciones { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.25rem; }
