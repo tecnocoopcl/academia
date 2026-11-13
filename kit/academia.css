@@ -1,0 +1,111 @@
+/*
+ * Estilos base de academia para páginas de curso. Opcional: un curso puede
+ * usar solo los componentes y su propio CSS. Toma la paleta de espacio
+ * (tema.css, ADR-034), así un curso se ve de la casa en claro y oscuro.
+ *
+ *   <link rel="stylesheet" href="https://academia.tecnocooperativa.cl/kit/academia.css">
+ *
+ * Piezas: .ac-pagina (columna de lectura), .ac-cabecera, .ac-nota,
+ * .ac-ejercicio, .ac-figura, .ac-laboratorio (fila de controles),
+ * .ac-boton, .ac-migas.
+ */
+@import url('./tema.css');
+
+:root {
+  --ac-ancho-lectura: 44rem;
+  --ac-espacio: 1.5rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--esp-bg);
+  color: var(--esp-text);
+  font-family: var(--esp-font);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--esp-accent); text-underline-offset: 0.15em; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--esp-accent);
+  outline-offset: 2px;
+}
+
+h1, h2, h3 { line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 5vw, 2.75rem); letter-spacing: -0.02em; margin: 0 0 0.5rem; }
+h2 { font-size: 1.5rem; margin: 2.5rem 0 0.75rem; }
+h3 { font-size: 1.15rem; margin: 2rem 0 0.5rem; }
+p { text-wrap: pretty; }
+pre { max-width: 100%; overflow-x: auto; padding: 1rem; border-radius: var(--esp-radius); background: var(--esp-bg-sunken); font-size: 0.85rem; }
+pre code { background: none; padding: 0; }
+code { font-family: var(--esp-mono); font-size: 0.9em; background: var(--esp-bg-sunken); padding: 0.1em 0.35em; border-radius: var(--esp-radius-sm); }
+
+.ac-pagina {
+  max-width: var(--ac-ancho-lectura);
+  margin: 0 auto;
+  padding: 2rem 1rem 5rem;
+}
+
+.ac-migas { font-size: 0.9rem; color: var(--esp-text-muted); margin-bottom: 2rem; }
+.ac-migas a { color: inherit; }
+
+.ac-cabecera { margin-bottom: 2.5rem; }
+.ac-cabecera .ac-bajada { font-size: 1.2rem; color: var(--esp-text-muted); margin: 0; }
+
+.ac-nota, .ac-ejercicio {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border-radius: var(--esp-radius);
+  background: var(--esp-bg-elevated);
+  border: 1px solid var(--esp-border);
+  border-left: 4px solid var(--esp-accent);
+}
+.ac-ejercicio { border-left-color: var(--esp-ok); }
+.ac-nota > :first-child, .ac-ejercicio > :first-child { margin-top: 0; }
+.ac-nota > :last-child, .ac-ejercicio > :last-child { margin-bottom: 0; }
+.ac-ejercicio::before {
+  content: 'Prueba';
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--esp-ok);
+  margin-bottom: 0.25rem;
+}
+
+.ac-figura { margin: 2rem 0; }
+.ac-figura figcaption { font-size: 0.9rem; color: var(--esp-text-muted); margin-top: 0.5rem; }
+
+/* Un laboratorio: los controles de un concepto, juntos y a mano. */
+.ac-laboratorio {
+  margin: 2rem 0;
+  padding: 1.25rem;
+  border-radius: var(--esp-radius-lg);
+  background: var(--esp-bg-elevated);
+  border: 1px solid var(--esp-border);
+  box-shadow: var(--esp-elev-1);
+  display: grid;
+  gap: 1.25rem;
+}
+.ac-controles { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; }
+
+.ac-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0 1.1rem;
+  border-radius: var(--esp-radius-control);
+  border: 1px solid var(--esp-accent);
+  background: var(--esp-accent);
+  color: var(--esp-accent-text);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ac-boton.secundario { background: transparent; color: var(--esp-accent); }

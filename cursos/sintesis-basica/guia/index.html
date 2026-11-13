@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Síntesis sustractiva en VCV Rack · guía interactiva</title>
+<meta name="description" content="Guía interactiva de síntesis sustractiva: cada capítulo con su laboratorio para escuchar y mover perillas, y su equivalente en VCV Rack.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: índice de capítulos | texto de la guía | laboratorio fijo con forma de panel de módulo (aluminio, tornillos, serigrafía) */
+:root {
+  --bg: #eceeeb;
+  --surface: #ffffff;
+  --panel: #d9dcd8;
+  --panel-2: #cfd3ce;
+  --ink: #17191a;
+  --muted: #565d5b;
+  --rule: #c3c8c4;
+  --audio: #c2410c;
+  --cv: #1d4ed8;
+  --gate: #15803d;
+  --poly: #7e22ce;
+  --screen: #0f1412;
+  --screen-ink: #9fe3b5;
+  --screen-grid: #22302a;
+  --key-white: #fbfbf9;
+  --key-black: #1b1d1e;
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-ui: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111314; --surface: #1a1d1e; --panel: #24282a; --panel-2: #2c3133; --ink: #e7eae8; --muted: #9ba3a0;
+    --rule: #353b3d; --audio: #f07a3e; --cv: #6f96ff; --gate: #41c070; --poly: #b583f0;
+    --screen: #0a0d0c; --screen-ink: #9fe3b5; --screen-grid: #1b2621; --key-white: #d9dcd8; --key-black: #0c0d0e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111314; --surface: #1a1d1e; --panel: #24282a; --panel-2: #2c3133; --ink: #e7eae8; --muted: #9ba3a0;
+  --rule: #353b3d; --audio: #f07a3e; --cv: #6f96ff; --gate: #41c070; --poly: #b583f0;
+  --screen: #0a0d0c; --screen-ink: #9fe3b5; --screen-grid: #1b2621; --key-white: #d9dcd8; --key-black: #0c0d0e;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 17px; line-height: 1.6; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cv); outline-offset: 2px; }
+
+#app {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) minmax(380px, 470px);
+  grid-template-areas: "top top top" "toc chapter lab";
+  gap: 0 40px;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+#app.no-lab { grid-template-columns: 220px minmax(0, 1fr); grid-template-areas: "top top" "toc chapter"; }
+#app.no-lab .lab { display: none; }
+
+/* top bar */
+.topbar {
+  grid-area: top; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-block: 18px 16px; border-bottom: 1px solid var(--rule); margin-bottom: 28px;
+}
+.brand { text-decoration: none; color: var(--ink); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.brand-main { font-family: var(--f-display); font-weight: 800; font-stretch: 112%; font-size: 1.15rem; letter-spacing: -0.01em; }
+.brand-sub { font-family: var(--f-ui); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+/* Enlaces de vuelta al curso y a academia (agregado al integrarla en academia). */
+.volver { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-left: auto; font-family: var(--f-ui); font-size: 0.85rem; }
+.volver a { color: var(--muted); text-decoration: none; }
+.volver a:hover { color: var(--ink); text-decoration: underline; }
+@media (max-width: 640px) { .topbar { flex-wrap: wrap; } .volver { order: 3; width: 100%; margin-left: 0; } }
+.power {
+  display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--rule); background: var(--surface);
+  padding: 7px 14px 7px 11px; border-radius: 999px; cursor: pointer; white-space: nowrap; font-family: var(--f-ui); font-size: 0.85rem; font-weight: 600;
+}
+.power .led { width: 9px; height: 9px; border-radius: 50%; background: var(--rule); box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+.power[aria-pressed="true"] .led { background: var(--gate); box-shadow: 0 0 8px var(--gate); }
+
+/* chapter index */
+.toc { grid-area: toc; position: sticky; top: 16px; align-self: start; display: flex; flex-direction: column; gap: 2px; font-family: var(--f-ui); }
+.toc a {
+  display: grid; grid-template-columns: 2.1em 1fr; gap: 4px; align-items: baseline;
+  padding: 6px 8px; border-radius: 6px; text-decoration: none; color: var(--muted); font-size: 0.9rem; line-height: 1.3;
+}
+.toc a .num { font-family: var(--f-mono); font-size: 0.75rem; color: var(--muted); }
+.toc a:hover { color: var(--ink); background: var(--panel); }
+.toc a[aria-current="page"] { color: var(--ink); background: var(--surface); box-shadow: inset 3px 0 0 var(--audio); font-weight: 600; }
+
+/* chapter text */
+.chapter { grid-area: chapter; min-width: 0; max-width: 68ch; }
+.eyebrow { font-family: var(--f-ui); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--audio); font-weight: 600; margin: 0 0 6px; }
+.chapter h2 { font-family: var(--f-display); font-weight: 800; font-stretch: 115%; font-size: clamp(2rem, 3.6vw, 2.9rem); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 24px; text-wrap: balance; }
+.chapter h2 .chn { font-family: var(--f-mono); font-weight: 400; font-size: 0.4em; color: var(--muted); vertical-align: 0.9em; margin-right: 0.5em; letter-spacing: 0; }
+.chapter h3 { font-family: var(--f-display); font-weight: 700; font-stretch: 105%; font-size: 1.3rem; line-height: 1.2; margin: 36px 0 10px; text-wrap: balance; }
+.chapter h4 { font-family: var(--f-ui); font-weight: 700; font-size: 0.95rem; margin: 22px 0 6px; }
+.chapter p { margin: 0 0 14px; }
+.chapter ul { margin: 0 0 16px; padding-left: 1.2em; }
+.chapter li { margin-bottom: 6px; }
+.chapter li::marker { color: var(--muted); }
+.chapter code { font-family: var(--f-mono); font-size: 0.85em; }
+.chapter b { font-weight: 650; }
+.chapter .small { font-size: 0.85rem; color: var(--muted); }
+.note { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--cv); border-radius: 4px; padding: 12px 16px; margin: 16px 0 20px; font-family: var(--f-ui); font-size: 0.92rem; line-height: 1.5; }
+.note .lbl { margin-right: 6px; }
+.chapter .firma { margin-top: 24px; font-family: var(--f-display); font-weight: 700; font-size: 1.1rem; }
+.chapter .firma a { color: inherit; text-decoration-color: var(--audio); }
+.tablewrap { overflow-x: auto; margin: 8px 0 22px; }
+.chapter table { border-collapse: collapse; width: 100%; font-family: var(--f-ui); font-size: 0.86rem; line-height: 1.4; }
+.chapter th { text-align: left; font-weight: 700; border-bottom: 1.5px solid var(--ink); padding: 6px 10px 6px 0; }
+.chapter td { border-bottom: 1px solid var(--rule); padding: 7px 10px 7px 0; vertical-align: top; font-variant-numeric: tabular-nums; }
+.fig { margin: 18px 0 22px; }
+.figscroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 14px; }
+.fig.legend .figscroll { background: transparent; border: 0; padding: 0; }
+.fig-svg { display: block; width: 100%; min-width: 440px; height: auto; }
+.fig.legend .fig-svg { min-width: 0; }
+.fig figcaption { font-family: var(--f-ui); font-size: 0.82rem; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+.pager { display: flex; justify-content: space-between; gap: 12px; margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule); font-family: var(--f-ui); }
+.pager a { color: var(--ink); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+.pager a span { display: block; font-weight: 400; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.pager a:hover { color: var(--audio); }
+
+/* ---------- lab: front panel ---------- */
+.lab {
+  grid-area: lab; position: sticky; top: 16px; align-self: start;
+  max-height: calc(100vh - 32px); overflow-y: auto; overscroll-behavior: contain;
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--rule); border-radius: 10px; font-family: var(--f-ui);
+  padding: 16px 18px 18px; position: sticky;
+}
+.screws { position: relative; }
+.screw { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, var(--surface), var(--rule)); box-shadow: inset 0 0 0 1px rgba(0,0,0,.18); }
+.screw::after { content: ""; position: absolute; left: 1px; right: 1px; top: 4px; height: 1px; background: rgba(0,0,0,.35); transform: rotate(35deg); }
+.lab-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; padding: 0 14px; }
+.lab-title { font-weight: 800; font-stretch: 118%; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.2; }
+.lab-title small { display: block; font-weight: 500; font-stretch: 100%; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.12em; }
+.reset { border: 1px solid var(--rule); background: var(--surface); border-radius: 5px; padding: 4px 10px; font-size: 0.75rem; cursor: pointer; white-space: nowrap; }
+
+.screens { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.screen { position: relative; background: var(--screen); border-radius: 6px; overflow: hidden; box-shadow: inset 0 0 0 2px rgba(0,0,0,.35); }
+.screen canvas { display: block; width: 100%; height: 108px; }
+.screen.wide { grid-column: 1 / -1; }
+.screen.wide canvas { height: 130px; }
+.screen-label { position: absolute; left: 8px; top: 6px; font-family: var(--f-mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--screen-ink); opacity: 0.75; pointer-events: none; }
+.readout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0 12px; }
+.readout div { background: var(--screen); color: var(--screen-ink); border-radius: 5px; padding: 6px 8px; font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 0.95rem; line-height: 1.2; }
+.readout span { display: block; font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; }
+
+/* keyboard strip */
+.kbd-strip { display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 8px; margin-bottom: 8px; }
+.wheel { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.wheel input { writing-mode: vertical-lr; direction: rtl; width: 22px; height: 104px; accent-color: var(--cv); }
+.wheel label { font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); text-align: center; line-height: 1.1; }
+.keys { position: relative; height: 120px; display: flex; user-select: none; touch-action: none; border-radius: 0 0 5px 5px; overflow: hidden; border-top: 3px solid var(--ink); }
+.key { flex: 1; border: 1px solid var(--rule); border-top: 0; background: var(--key-white); border-radius: 0 0 4px 4px; position: relative; cursor: pointer; }
+.key.black { position: absolute; top: 0; height: 62%; z-index: 2; background: var(--key-black); border-color: var(--key-black); flex: none; }
+.key.on { background: var(--audio) !important; }
+.key .cap { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-family: var(--f-mono); font-size: 0.55rem; color: var(--muted); pointer-events: none; }
+.key.black .cap { color: #8a8f8d; }
+.kbd-ctrl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 0.75rem; margin: 0 0 14px 42px; color: var(--muted); }
+.kbd-ctrl button { border: 1px solid var(--rule); background: var(--surface); border-radius: 5px; padding: 3px 9px; cursor: pointer; font-size: 0.75rem; }
+.kbd-ctrl button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.kbd-ctrl .vel { display: inline-flex; align-items: center; gap: 6px; }
+.kbd-ctrl input[type=range] { width: 80px; accent-color: var(--audio); }
+.hint { font-size: 0.72rem; color: var(--muted); margin: -8px 0 14px 42px; line-height: 1.4; }
+.hint kbd { font-family: var(--f-mono); font-size: 0.68rem; border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 3px; padding: 0 4px; background: var(--surface); }
+
+/* control sections */
+.sections { display: flex; flex-direction: column; gap: 12px; }
+.sec { border-top: 1px solid var(--rule); padding-top: 10px; }
+.sec-title { display: flex; align-items: center; gap: 8px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; margin: 0 0 8px; }
+.sec-title::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--jack, var(--muted)); box-shadow: 0 0 0 2px var(--panel), 0 0 0 3px var(--rule); }
+.ctrls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+.ctrl { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.ctrl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.ctrl label { font-size: 0.74rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctrl output { font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ctrl input[type=range] { width: 100%; accent-color: var(--jack, var(--audio)); margin: 2px 0 0; }
+.ctrl select { width: 100%; background: var(--surface); border: 1px solid var(--rule); border-radius: 5px; padding: 4px 6px; font-size: 0.8rem; }
+.ctrl.tog { flex-direction: row; align-items: center; gap: 8px; }
+.ctrl.tog input { accent-color: var(--jack, var(--audio)); width: 16px; height: 16px; }
+.ctrl.tog label { white-space: normal; }
+
+.presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
+.presets button { border: 1px solid var(--rule); background: var(--surface); border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 0.78rem; font-weight: 600; }
+.presets button[aria-pressed="true"] { border-color: var(--audio); box-shadow: inset 0 -2px 0 var(--audio); }
+
+.gator { display: grid; grid-template-columns: repeat(16, 1fr); gap: 3px; margin: 6px 0 2px; }
+.gator button { aspect-ratio: 1 / 1.6; border: 1px solid var(--rule); background: var(--surface); border-radius: 3px; cursor: pointer; padding: 0; }
+.gator button[aria-pressed="true"] { background: var(--gate); border-color: var(--gate); }
+.gator button.now { box-shadow: 0 0 0 2px var(--audio); }
+.gator button:nth-child(4n+1) { border-left-width: 2px; }
+
+.try { margin-top: 14px; border-top: 1px solid var(--rule); padding-top: 10px; }
+.try h4 { margin: 0 0 6px; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.14em; }
+.try ol { margin: 0; padding-left: 1.2em; font-size: 0.82rem; line-height: 1.45; }
+.try li { margin-bottom: 4px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  #app { grid-template-columns: minmax(0, 1fr) minmax(360px, 430px); grid-template-areas: "top top" "toc toc" "chapter lab"; gap: 0 28px; }
+  #app.no-lab { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "toc" "chapter"; }
+  .toc { position: static; flex-direction: row; overflow-x: auto; gap: 4px; margin-bottom: 24px; padding-bottom: 6px; }
+  .toc a { grid-template-columns: auto auto; white-space: nowrap; }
+}
+@media (max-width: 860px) {
+  #app, #app.no-lab { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "toc" "lab" "chapter"; }
+  .lab { position: static; max-height: none; overflow: visible; margin-bottom: 28px; }
+  body { font-size: 16px; }
+}
+@media (max-width: 420px) {
+  .ctrls { grid-template-columns: minmax(0, 1fr); }
+  .lab { padding: 14px 12px; }
+  .readout div { font-size: 0.8rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <a class="brand" href="#prologo"><span class="brand-main">Síntesis sustractiva</span><span class="brand-sub">en VCV Rack</span></a>
+    <nav class="volver" aria-label="Curso"><a href="../">Índice del curso</a><a href="../manual.pdf">Manual en PDF</a><a href="/">academia</a></nav>
+    <button id="power" class="power" type="button" aria-pressed="false"><span class="led" aria-hidden="true"></span><span id="power-label">Activar audio</span></button>
+  </header>
+  <nav class="toc" id="toc" aria-label="Capítulos"></nav>
+  <main class="chapter" id="chapter"></main>
+  <section class="lab" id="lab" aria-label="Laboratorio"></section>
+</div>
+<script>
+const CHAPTERS = [{"n": "prologo", "kick": "ANTES DE EMPEZAR", "title": "Prólogo", "html": "<p>Desde que tomé una guitarra por allá por los 2000 nunca más me separé de la música. Si bien gracias a mi papá estaba embebido en un modesto mundo musical (tenía una grabadora, y era contador de una radio AM en Vicuña, en Chile), pronto, con el advenimiento de los computadores en casa, descubrí diversos programas para poder grabar sonidos de forma digital. Diversas herramientas usé, como Audacity o Cubase; pero Fruity Loops –hoy llamado FL Studio– tenía algo más: ofrecía samples, efectos de sonido e instrumentos digitales, entre ellos el 3xOsc: un sintetizador. Desde ese entonces tuve una cercanía con los sintetizadores y el protocolo MIDI, que me permitía usar mi teclado de juguete, un Casio MA150, y poder hacer música electrónica, y bases para tocar guitarra encima. Pero no fue hasta que compré el sintetizador Ultranova de Novation, por ahí por el 2016, que tuve acceso a una guía básica de sintetización, y eso me marcó. Fue muy emocionante, y por eso lo recuerdo vivamente: por fin podía entender, ya no solo de manera intuitiva, un sintetizador, cómo funcionaba, cómo se interconectaban las distintas piezas, y por fin sentía que podía expresarme de mejor forma, más allá de reconfigurar un preset que me gustase.</p>\n<p>Hoy, a más de dos décadas de ese primer acercamiento con estos instrumentos, quiero construir esta guía –y otros artefactos complementarios– para devolver al mundo esa posibilidad de sentir lo que yo sentí cuando pude entender lo que ya hacía de forma intuitiva, esa sensación de logro infinita que me abrió otras posibilidades, incluso en esos albores donde manipular un sintetizador parece programación (que es una actividad que disfruto mucho hoy en día, de una forma particularmente distinta, claro).</p>\n<p>Espero de corazón que esta guía te entregue conceptos y conocimientos básicos para que puedas navegar en este hermoso mundo de la sintetización.</p>\n<p class=\"firma\"><a href=\"https://aebn.cl\" rel=\"author\">Alejandro</a>.</p><p class=\"small\">Si quieres conocer más de lo que hago, visita <a href=\"https://aebn.cl\" rel=\"author\">aebn.cl</a>.</p>"}, {"n": "introduccion", "kick": "ANTES DE EMPEZAR", "title": "Introducción", "html": "<p>Esta es una guía básica, pensada en tres artefactos para que puedas construir conocimientos.</p>\n<p>El primer artefacto es la guía en sí misma, donde encontrarás los contenidos principales del curso, con imágenes que te puedan ayudar a comprenderlos. Puedes leerla aquí, capítulo a capítulo, o descargarla en PDF para leerla con calma o imprimirla.</p>\n<p>El segundo artefacto es lo que tienes en pantalla. Dado que esta es una guía para entender y producir sonidos, programé esta aplicación web: cada módulo del curso trae, junto al texto, un laboratorio con un sintetizador que puedes tocar con el teclado del computador o en pantalla, para escuchar y mover cada parámetro mientras lees. Para que suene, presiona <b>Activar audio</b> arriba.</p>\n<p>Y por último, para que puedas experimentar con un sintetizador que una todos estos conceptos, creé <b>zinte</b>, un sintetizador para VCV Rack, una aplicación gratuita que puedes descargar y donde podrás hacer tus propias configuraciones y sonidos.</p>\n<p>Todo esto es parte de un mismo conjunto:</p>\n<ul>\n<li><b>Guía:</b> <a href=\"../manual.pdf\">descargar en PDF</a>.</li>\n<li><b>Aplicación web:</b> estás en ella. Los capítulos están en el índice; el siguiente es <a href=\"#cap-0\">Cómo usar esta guía</a>.</li>\n<li><b>Zinte y VCV Rack:</b> <a href=\"https://vcvrack.com/Rack\">descarga VCV Rack</a>, gratis. El enlace para descargar zinte estará aquí pronto.</li>\n</ul>"}, {"n": 0, "kick": "PUNTO DE PARTIDA", "title": "Cómo usar esta guía", "html": "<p>Un sintetizador de hardware es un patch modular cableado de fábrica: osciladores, mixer, filtros, envolventes, LFOs, una matriz de modulación y una cadena de efectos, todo conectado por un bus interno que el panel oculta. VCV Rack expone ese bus. Cada parámetro del menú del hardware corresponde a una perilla, a un cable o a una pequeña sub-red de módulos.</p>\n<p>La guía sigue el orden de un manual de sintetizador: fuente → mezcla → filtrado → contorno → modulación → control → efectos. Cada capítulo tiene tres partes: el concepto, el equivalente en VCV (módulos y cableado) y un patch de práctica. Al final de cada capítulo una tabla traduce los parámetros del hardware a VCV.</p>\n<h4>Convenciones de los diagramas</h4>\n<figure class=\"fig legend\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Leyenda de colores de cable\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 19\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip1\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"19.84251968503937\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-19)\" style=\"clip-path: url(#clip1)\"><g transform=\"\"><polyline points=\"0 9.92126, 25.51181 9.92126\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.3; fill: None; fill-rule: evenodd;\"/><text x=\"31.181102362204726\" y=\"6.803149606299213\" style=\"font-family: var(--f-ui); font-size: 7px;fill: var(--muted); stroke:none;\" transform=\"translate(0,13) scale(1,-1)\">audio</text><polyline points=\"107.7165 9.92126, 133.2283 9.92126\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.3; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><text x=\"138.8976377952756\" y=\"6.803149606299213\" style=\"font-family: var(--f-ui); font-size: 7px;fill: var(--muted); stroke:none;\" transform=\"translate(0,13) scale(1,-1)\">CV / modulación</text><polyline points=\"215.4331 9.92126, 240.9449 9.92126\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 1.3; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><text x=\"246.6141732283465\" y=\"6.803149606299213\" style=\"font-family: var(--f-ui); font-size: 7px;fill: var(--muted); stroke:none;\" transform=\"translate(0,13) scale(1,-1)\">gate / trigger</text><polyline points=\"323.1496 9.92126, 348.6614 9.92126\" style=\"stroke: var(--poly); stroke-linecap: butt; stroke-width: 1.3; fill: None; fill-rule: evenodd;\"/><text x=\"354.33070866141736\" y=\"6.803149606299213\" style=\"font-family: var(--f-ui); font-size: 7px;fill: var(--muted); stroke:none;\" transform=\"translate(0,13) scale(1,-1)\">polifónico</text></g></g></svg>\n</div></figure>\n<p>Los módulos sin prefijo pertenecen a <b>VCV Fundamental</b> o <b>Core</b>, que vienen con Rack. Los demás indican su plugin entre paréntesis (Befaco, Bogaudio, Valley, Impromptu); todos son gratuitos en la VCV Library.</p>\n<h3>Convenciones eléctricas de VCV</h3>\n<div class=\"tablewrap\"><table><thead><tr><th>Señal</th><th>Rango típico</th><th>Uso</th></tr></thead><tbody><tr><td>Audio</td><td>±5 V</td><td>Salida de osciladores, filtros, efectos</td></tr><tr><td>CV unipolar</td><td>0 a +10 V</td><td>Envolventes, niveles, cutoff</td></tr><tr><td>CV bipolar</td><td>±5 V</td><td>LFOs, pitch bend, modulación simétrica</td></tr><tr><td>V/Oct</td><td>1 V = 1 octava; 0 V = C4</td><td>Afinación. 1 semitono = 1/12 V ≈ 83,3 mV</td></tr><tr><td>Gate</td><td>0 V / +10 V sostenido</td><td>Nota presionada</td></tr><tr><td>Trigger</td><td>pulso corto de +10 V</td><td>Reset, reloj, retrigger</td></tr></tbody></table></div>\n<h4>Polifonía</h4>\n<p>Un cable de VCV transporta hasta 16 canales. MIDI-CV con <i>Polyphony channels</i> &gt; 1 entrega V/Oct, gate y velocity polifónicos; VCO, VCF, ADSR y VCA de Fundamental procesan cada canal por separado, de modo que una sola fila de módulos ya es un sinte polifónico. El cable polifónico se dibuja más grueso. Antes de la salida de audio, <b>Sum</b> o <b>VCV Mixer</b> colapsan los canales a mono.</p>\n<h4>Atajos que usarás todo el tiempo</h4>\n<ul><li>Ctrl/Cmd + arrastrar una perilla: ajuste fino. Clic derecho sobre la perilla: escribir el valor exacto.</li><li>Ctrl/Cmd + clic sobre un jack de salida: duplica el cable (mult implícito). Una salida alimenta cualquier número de entradas.</li><li>Dos cables hacia una misma entrada no se suman: VCV acepta un solo cable por entrada. Sumar requiere un mixer o <b>Sum</b>.</li><li>Ctrl/Cmd + E: duplicar el patch seleccionado. Guarda subpatches como <i>selection</i> (.vcvs) para reutilizarlos.</li></ul>"}, {"n": 1, "kick": "ARQUITECTURA", "title": "La voz sustractiva", "html": "<p>La síntesis sustractiva parte de una forma de onda rica en armónicos y le resta contenido con un filtro. La amplitud y el timbre cambian en el tiempo por acción de envolventes y LFOs. El hardware fija este orden; en VCV lo construyes explícitamente.</p>\n<p>La cadena mínima tiene cinco módulos y tres tipos de señal. MIDI-CV convierte el teclado en voltajes. VCO genera la onda. VCF la filtra. VCA controla el volumen. ADSR genera el contorno que abre el VCA cuando llega el gate.</p>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 1. Voz sustractiva básica. Con MIDI-CV en modo polifónico, la misma fila suena polifónica; agrega Sum antes de Audio.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 147\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip2\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"147.40157480314963\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-147)\" style=\"clip-path: url(#clip2)\"><g transform=\"\"><rect x=\"0.0\" y=\"53.85826771653544\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"21.197404035433074\" y=\"75.96850393700788\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,151) scale(1,-1)\">MIDI-CV</text><text x=\"31.375260480745574\" y=\"61.22834645669292\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,122) scale(1,-1)\">Core</text><rect x=\"104.88188976377954\" y=\"99.21259842519686\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"134.18954770546262\" y=\"121.3228346456693\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,242) scale(1,-1)\">VCO</text><text x=\"136.34213559608762\" y=\"106.58267716535434\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,213) scale(1,-1)\">SAW</text><rect x=\"209.76377952755908\" y=\"99.21259842519686\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"239.70600778174216\" y=\"121.3228346456693\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,242) scale(1,-1)\">VCF</text><text x=\"242.91220895361715\" y=\"106.58267716535434\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,213) scale(1,-1)\">LPF</text><rect x=\"314.6456692913386\" y=\"99.21259842519686\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"344.24278035802166\" y=\"121.3228346456693\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,242) scale(1,-1)\">VCA</text><rect x=\"209.76377952755908\" y=\"14.173228346456696\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"236.27339059424216\" y=\"36.28346456692914\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,72) scale(1,-1)\">ADSR</text><rect x=\"377.0078740157481\" y=\"14.173228346456696\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"402.99609836368114\" y=\"36.28346456692914\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,72) scale(1,-1)\">Audio</text><text x=\"408.38313449649365\" y=\"21.543307086614178\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,43) scale(1,-1)\">Core</text><polyline points=\"76.53543 77.95276, 90.70866 77.95276, 90.70866 117.6378, 100.3465 117.6378\" style=\"stroke: var(--poly); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"104.8819 117.6378, 99.2126 120.4724, 99.2126 114.8031\" style=\"stroke: var(--poly); stroke-linecap: butt; stroke-width: 0.1; fill: var(--poly); fill-rule: evenodd;\"/><text x=\"93.54330708661418\" y=\"100.62992125984253\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--poly); stroke:none;\" transform=\"translate(0,201) scale(1,-1)\">V/Oct</text><polyline points=\"181.4173 117.6378, 195.5906 117.6378, 195.5906 117.6378, 205.2283 117.6378\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"209.7638 117.6378, 204.0945 120.4724, 204.0945 114.8031\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"286.2992 117.6378, 300.4724 117.6378, 300.4724 117.6378, 310.1102 117.6378\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"314.6457 117.6378, 308.9764 120.4724, 308.9764 114.8031\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"76.53543 66.61417, 143.1496 66.61417, 143.1496 32.59843, 205.2283 32.59843\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"209.7638 32.59843, 204.0945 35.43307, 204.0945 29.76378\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 0.1; fill: var(--gate); fill-rule: evenodd;\"/><text x=\"145.98425196850397\" y=\"52.44094488188977\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--gate); stroke:none;\" transform=\"translate(0,104) scale(1,-1)\">GATE</text><polyline points=\"286.2992 32.59843, 300.4724 32.59843, 300.4724 109.1339, 310.1102 109.1339\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"314.6457 109.1339, 308.9764 111.9685, 308.9764 106.2992\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"303.3070866141732\" y=\"73.7007874015748\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,147) scale(1,-1)\">ENV→CV</text><polyline points=\"391.1811 106.2992, 399.685 106.2992, 399.685 2.834646, 365.6693 2.834646, 365.6693 41.10236, 372.4724 41.10236\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"377.0079 41.10236, 371.3386 43.93701, 371.3386 38.26772\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/></g></g></svg>\n</div><figcaption>Fig. 1. Voz sustractiva básica. Con MIDI-CV en modo polifónico, la misma fila suena polifónica; agrega Sum antes de Audio.</figcaption></figure>\n<h4>Patch de práctica</h4>\n<ul><li>Arma la Fig. 1. Pon MIDI-CV en 1 canal y el VCF con FREQ al máximo y RES en cero: escuchas el VCO crudo.</li><li>Baja FREQ hasta que la nota se vuelva opaca. Ese es el gesto central de la síntesis sustractiva.</li><li>Conecta un <b>Scope</b> a la salida del VCO y luego a la del VCF: la diente de sierra se redondea a medida que el filtro elimina armónicos altos.</li><li>Sube Polyphony channels a 6 en MIDI-CV y agrega <b>Sum</b> antes de Audio. Toca acordes.</li></ul>\n<h3>De menú a cable</h3>\n<p>El hardware organiza sus parámetros en menús (Oscillator, Mixer, Filter, Envelope, LFO, Modulation, Arp, FX). Cada menú es un capítulo de esta guía. El dato más importante del cambio de plataforma: en VCV la <i>modulación no es un menú aparte</i>. Cualquier salida puede ir a cualquier entrada; la matriz de modulación es todo el rack.</p>"}, {"n": 2, "kick": "FUENTE", "title": "Osciladores", "html": "<p>El oscilador fija la altura (pitch) y el contenido armónico inicial. Todo lo que el filtro pueda hacer depende de lo que el oscilador le entregue: un filtro solo resta, no agrega.</p>\n<h3>Formas de onda</h3>\n<div class=\"tablewrap\"><table><thead><tr><th>Onda</th><th>Armónicos</th><th>Carácter</th><th>Uso típico</th></tr></thead><tbody><tr><td>Seno</td><td>Solo la fundamental</td><td>Puro, sin brillo</td><td>Sub-bajo, FM, LFO</td></tr><tr><td>Triángulo</td><td>Impares, caen 1/n²</td><td>Suave, aflautado</td><td>Leads suaves, bajos redondos</td></tr><tr><td>Diente de sierra</td><td>Todos, caen 1/n</td><td>Brillante, metálico</td><td>Cuerdas, brass, pads, bajos</td></tr><tr><td>Cuadrada (50 %)</td><td>Impares, caen 1/n</td><td>Hueco, clarinete</td><td>Bajos, leads de chip</td></tr><tr><td>Pulso (≠ 50 %)</td><td>Variables según ancho</td><td>Nasal, delgado</td><td>PWM, pads animados</td></tr></tbody></table></div>\n<p><b>VCO</b> (Fundamental) entrega las cuatro ondas en paralelo. Las salidas operan simultáneamente: puedes mezclar SAW y SQR del mismo VCO en un mixer. El modo <i>analog</i> agrega imperfecciones sutiles; el modo <i>digital</i> produce ondas exactas.</p>\n<h3>Pulse width y PWM</h3>\n<p>La perilla PW mueve el ancho del pulso. Al alejarse de 50 % aparecen armónicos pares y el timbre se adelgaza. La modulación de ancho de pulso (PWM) conecta un LFO lento a la entrada PWM: el pulso “respira” y suena como dos osciladores levemente desafinados. Es el pad clásico de un solo oscilador.</p>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 2. PWM. Ajusta el atenuador PWM del VCO para que el pulso no llegue a 0 % ni 100 %: en los extremos el sonido desaparece.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 62\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip3\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"62.36220472440945\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-62)\" style=\"clip-path: url(#clip3)\"><g transform=\"\"><rect x=\"0.0\" y=\"14.173228346456689\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"30.020157941683074\" y=\"36.28346456692913\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,72) scale(1,-1)\">LFO</text><text x=\"20.74056809793307\" y=\"21.54330708661417\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,43) scale(1,-1)\">TRI ~0,3 Hz</text><rect x=\"113.38582677165356\" y=\"14.173228346456689\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"142.69348471333663\" y=\"36.28346456692913\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,72) scale(1,-1)\">VCO</text><text x=\"145.40928061177414\" y=\"21.54330708661417\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,43) scale(1,-1)\">SQR</text><rect x=\"226.7716535433071\" y=\"14.173228346456689\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"242.21339351624022\" y=\"36.28346456692913\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,72) scale(1,-1)\">VCF → VCA</text><polyline points=\"76.53543 32.59843, 94.96063 32.59843, 94.96063 32.59843, 108.8504 32.59843\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"113.3858 32.59843, 107.7165 35.43307, 107.7165 29.76378\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"81.92756905142717\" y=\"36.28346456692913\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,72) scale(1,-1)\">PWM</text><polyline points=\"189.9213 32.59843, 208.3465 32.59843, 208.3465 32.59843, 222.2362 32.59843\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"226.7717 32.59843, 221.1024 35.43307, 221.1024 29.76378\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/></g></g></svg>\n</div><figcaption>Fig. 2. PWM. Ajusta el atenuador PWM del VCO para que el pulso no llegue a 0 % ni 100 %: en los extremos el sonido desaparece.</figcaption></figure>\n<h3>Afinación: semitonos, cents y rango del pitch bend</h3>\n<p>El VCO suma todos los voltajes de pitch: perilla FREQ + entrada V/Oct + FM. Transponer un oscilador +7 semitonos equivale a sumarle 7/12 V. Para el pitch bend, conecta la salida PW de MIDI-CV (±5 V) a la entrada FM del VCO y ajusta el atenuador. Con FM en modo exponencial, 1/12 V por semitono: un rango de ±2 semitonos requiere escalar ±5 V a ±0,167 V (atenuador ≈ 3,3 %).</p>\n<h3>Densidad y desafinación (unison)</h3>\n<p>Densidad agrega copias del mismo oscilador; detune las separa unos pocos cents. El batido entre copias produce el sonido “grueso” de un supersaw. En VCV la técnica directa usa varios VCO con la misma V/Oct y FREQ ligeramente distinta (Ctrl + arrastrar). Tres VCO a −7, 0 y +7 cents ya producen un unison convincente. Más copias o más detune engordan el sonido; demasiado detune lo desafina.</p>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 3. Unison de tres osciladores. Baja cada canal del mixer a ~1/3 para evitar saturación.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 147\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip4\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"147.40157480314963\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-147)\" style=\"clip-path: url(#clip4)\"><g transform=\"\"><rect x=\"0.0\" y=\"59.52755905511812\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"21.197404035433074\" y=\"81.63779527559056\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,163) scale(1,-1)\">MIDI-CV</text><rect x=\"113.38582677165356\" y=\"110.55118110236222\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"138.72649252583665\" y=\"132.66141732283467\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,265) scale(1,-1)\">VCO 1</text><text x=\"143.58857748677414\" y=\"117.9212598425197\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,235) scale(1,-1)\">−7 ct</text><rect x=\"113.38582677165356\" y=\"59.52755905511812\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"138.72649252583665\" y=\"81.63779527559056\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,163) scale(1,-1)\">VCO 2</text><text x=\"146.06035483052415\" y=\"66.8976377952756\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,133) scale(1,-1)\">0 ct</text><rect x=\"113.38582677165356\" y=\"8.503937007874015\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"138.72649252583665\" y=\"30.61417322834646\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,61) scale(1,-1)\">VCO 3</text><text x=\"143.58857748677414\" y=\"15.874015748031496\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,31) scale(1,-1)\">+7 ct</text><rect x=\"226.7716535433071\" y=\"59.52755905511812\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"243.0594872662402\" y=\"81.63779527559056\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,163) scale(1,-1)\">VCV Mixer</text><text x=\"254.1583642193652\" y=\"66.8976377952756\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,133) scale(1,-1)\">o Mixer</text><rect x=\"334.488188976378\" y=\"59.52755905511812\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"364.4304172305611\" y=\"81.63779527559056\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,163) scale(1,-1)\">VCF</text><polyline points=\"76.53543 77.95276, 94.96063 77.95276, 94.96063 128.9764, 108.8504 128.9764\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"113.3858 128.9764, 107.7165 131.811, 107.7165 126.1417\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"97.79527559055119\" y=\"106.2992125984252\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,212) scale(1,-1)\">V/Oct</text><polyline points=\"76.53543 77.95276, 94.96063 77.95276, 94.96063 77.95276, 108.8504 77.95276\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"113.3858 77.95276, 107.7165 80.7874, 107.7165 75.11811\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><polyline points=\"76.53543 77.95276, 94.96063 77.95276, 94.96063 26.92913, 108.8504 26.92913\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"113.3858 26.92913, 107.7165 29.76378, 107.7165 24.09449\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><polyline points=\"189.9213 128.9764, 208.3465 128.9764, 208.3465 86.45669, 222.2362 86.45669\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"226.7717 86.45669, 221.1024 89.29134, 221.1024 83.62205\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"189.9213 77.95276, 208.3465 77.95276, 208.3465 77.95276, 222.2362 77.95276\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"226.7717 77.95276, 221.1024 80.7874, 221.1024 75.11811\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"189.9213 26.92913, 208.3465 26.92913, 208.3465 69.44882, 222.2362 69.44882\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"226.7717 69.44882, 221.1024 72.28346, 221.1024 66.61417\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"303.3071 77.95276, 318.8976 77.95276, 318.8976 77.95276, 329.9528 77.95276\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"334.4882 77.95276, 328.8189 80.7874, 328.8189 75.11811\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/></g></g></svg>\n</div><figcaption>Fig. 3. Unison de tres osciladores. Baja cada canal del mixer a ~1/3 para evitar saturación.</figcaption></figure>\n<h3>Drift: la imperfección como recurso</h3>\n<p>Los osciladores analógicos derivan: su afinación se mueve unos cents de forma lenta y aleatoria. El drift reproduce ese efecto y hace que un unison suene vivo en lugar de estático. En VCV, <b>Random</b> (Fundamental) con frecuencia baja y shape suavizado entrega una curva aleatoria lenta. Conéctala a la FM de cada VCO con un atenuador mínimo (1–2 %). Usa una salida distinta, o un Random distinto, por oscilador para que las derivas no se correlacionen.</p>\n<h3>Fase de inicio</h3>\n<p>La fase determina en qué punto del ciclo arranca la onda al presionar una tecla. Con fase libre, cada nota empieza en un punto distinto y los ataques varían levemente. Con fase fija, todas las notas arrancan igual: el ataque gana un “click” consistente, útil en bajos y percusión. En VCV, enviar el gate de MIDI-CV a la entrada SYNC del VCO reinicia la fase en cada nota.</p>\n<h4>Sync de osciladores</h4>\n<p>Hard sync reinicia un oscilador esclavo cada vez que el maestro completa un ciclo. Al barrer la frecuencia del esclavo, el timbre cambia de forma agresiva mientras la altura percibida sigue al maestro. Conecta SQR del VCO 1 a SYNC del VCO 2 y modula FREQ del VCO 2 con una envolvente: es el lead sincronizado clásico.</p>\n<h3>Wavetables e interpolación</h3>\n<p>Una wavetable es una secuencia de formas de onda de un ciclo. El parámetro <i>posición</i> recorre la tabla; la interpolación decide si el paso entre ondas adyacentes es gradual o abrupto. <b>WT VCO</b> (Fundamental) carga tablas .wav, expone POS como perilla y como entrada CV, e interpola entre ondas. Modular POS con un LFO o una envolvente produce cambios tímbricos que un VCO clásico no logra solo con el filtro.</p>\n<h3>Nota fija</h3>\n<p>Una nota fija ignora el teclado: cada tecla dispara la misma altura. Sirve para percusión y efectos. En VCV basta con no conectar V/Oct al VCO y conservar el gate hacia el ADSR. El teclado se convierte en un disparador.</p>\n<h3>Vibrato</h3>\n<p>El vibrato modula el pitch con un LFO de 4–7 Hz. La profundidad suele quedar bajo el mod wheel. En VCV es un caso de modulación multiplicada: LFO → VCA ← MW de MIDI-CV → FM del VCO. El capítulo 7 desarrolla este patrón.</p>\n<h3>Ruido</h3>\n<p>El ruido contiene energía en todas las frecuencias y no tiene altura definida. Sirve para viento, respiración, hi-hats, snares y para engrosar el ataque de una nota. <b>Noise</b> (Fundamental) entrega siete colores. El color define la pendiente espectral: el blanco tiene igual potencia por Hz y suena siseante; el rosa cae 3 dB/octava y suena más equilibrado al oído; rojo (browniano) cae 6 dB/oct y suena grave; azul y violeta suben y suenan más brillantes. Un filtro pasa banda sobre ruido blanco reproduce los tipos “High”, “Band” y “High-band” del hardware.</p>\n<h4>Traducción de parámetros</h4>\n<div class=\"tablewrap\"><table><thead><tr><th>Parámetro de hardware</th><th>Equivalente en VCV</th></tr></thead><tbody><tr><td>Wave / forma de onda</td><td>Salida elegida del VCO (SIN, TRI, SAW, SQR)</td></tr><tr><td>Semitones / Cents</td><td>FREQ del VCO (Ctrl+arrastrar o clic derecho para valor exacto)</td></tr><tr><td>Pulse width / PWM</td><td>Perilla PW + entrada PWM con su atenuador</td></tr><tr><td>Pitch wheel range</td><td>PW de MIDI-CV → FM del VCO, atenuador escalado a 1/12 V por semitono</td></tr><tr><td>Density / Density detune</td><td>Varios VCO en paralelo con FREQ ligeramente distinta</td></tr><tr><td>Oscillator drift</td><td>Random lento → FM, atenuación 1–2 %</td></tr><tr><td>Oscillator phase</td><td>Gate → SYNC del VCO (fase fija) o nada (fase libre)</td></tr><tr><td>Wavetable index / interpolation</td><td>WT VCO: perilla POS y entrada POS CV</td></tr><tr><td>Fixed note</td><td>No conectar V/Oct; solo gate</td></tr><tr><td>Vibrato depth / rate</td><td>LFO × MW (VCA) → FM del VCO</td></tr><tr><td>Noise type</td><td>Noise (color) + filtro pasa banda si hace falta</td></tr></tbody></table></div>"}, {"n": 3, "kick": "MEZCLA", "title": "Mixer y ring modulation", "html": "<p>El mixer suma las fuentes antes del filtro. En el hardware tiene entradas fijas: tres osciladores, ruido y dos ring modulators. En VCV eliges cuántas y cuáles.</p>\n<h3>Ganancia y headroom</h3>\n<p>El error clásico es subir todas las entradas al máximo. Tres ondas de ±5 V sumadas alcanzan ±15 V; el filtro y los efectos reciben una señal que satura o clipea. El criterio del manual vale igual en VCV: con varias fuentes activas, deja cada canal cerca de la mitad. Conecta un <b>Scope</b> a la salida del mixer y verifica que la señal se mantenga cerca de ±5 V. Las saturaciones deliberadas se hacen con el DRIVE del VCF, no con un mixer desbordado.</p>\n<h4>Solo y mute</h4>\n<p><b>Mutes</b> (Fundamental) silencia canales individuales sin mover niveles. Para escuchar una sola fuente, mutea las demás; equivale a la función Solo del hardware.</p>\n<h3>Ring modulation</h3>\n<p>El ring modulator multiplica dos señales de audio. Con entradas de frecuencias f₁ y f₂, la salida contiene f₁ + f₂ y |f₁ − f₂| y suprime las originales. Cuando la relación entre f₁ y f₂ no es un entero simple, esas frecuencias quedan fuera de la serie armónica y el resultado suena metálico, de campana o atonal. Con intervalos de quinta (+7), octava (+12) o cuarta (+5) el resultado es más armónico; con intervalos pequeños aparece batido.</p>\n<p>La multiplicación debe ser de cuatro cuadrantes: ambas señales bipolares. Un VCA estándar no sirve, porque recorta la parte negativa de la CV y produce modulación de amplitud (AM), no ring mod. <b>A*B+C</b> (Befaco) hace la multiplicación completa.</p>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 4. Ring modulator. Transpone VCO 3 en +5, +7 y +12 semitonos y compara; luego desafina unos cents para obtener batido.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 113\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip5\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"113.38582677165356\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-113)\" style=\"clip-path: url(#clip5)\"><g transform=\"\"><rect x=\"0.0\" y=\"76.53543307086615\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"25.340665754183075\" y=\"98.64566929133859\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,197) scale(1,-1)\">VCO 1</text><text x=\"31.460245832308072\" y=\"83.90551181102363\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,167) scale(1,-1)\">SAW</text><rect x=\"0.0\" y=\"8.503937007874015\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"25.340665754183075\" y=\"30.61417322834646\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,61) scale(1,-1)\">VCO 3</text><text x=\"25.727335676058072\" y=\"15.874015748031496\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,31) scale(1,-1)\">SIN / TRI</text><rect x=\"119.05511811023624\" y=\"42.519685039370074\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"143.5255690206693\" y=\"64.62992125984252\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,129) scale(1,-1)\">A*B+C</text><text x=\"147.2110182394193\" y=\"49.889763779527556\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,99) scale(1,-1)\">Befaco</text><rect x=\"238.11023622047247\" y=\"42.519685039370074\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"264.39162463090554\" y=\"64.62992125984252\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,129) scale(1,-1)\">Mixer</text><rect x=\"345.82677165354335\" y=\"42.519685039370074\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"375.7689999077264\" y=\"64.62992125984252\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,129) scale(1,-1)\">VCF</text><polyline points=\"76.53543 94.96063, 97.79528 94.96063, 97.79528 66.61417, 114.5197 66.61417\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"119.0551 66.61417, 113.3858 69.44882, 113.3858 63.77953\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><text x=\"100.62992125984253\" y=\"83.62204724409449\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--audio); stroke:none;\" transform=\"translate(0,167) scale(1,-1)\">A</text><polyline points=\"76.53543 26.92913, 97.79528 26.92913, 97.79528 55.27559, 114.5197 55.27559\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"119.0551 55.27559, 113.3858 58.11024, 113.3858 52.44094\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><text x=\"100.62992125984253\" y=\"43.93700787401575\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--audio); stroke:none;\" transform=\"translate(0,87) scale(1,-1)\">B</text><polyline points=\"195.5906 60.94488, 216.8504 60.94488, 216.8504 60.94488, 233.5748 60.94488\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"238.1102 60.94488, 232.4409 63.77953, 232.4409 58.11024\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"314.6457 60.94488, 330.2362 60.94488, 330.2362 60.94488, 341.2913 60.94488\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"345.8268 60.94488, 340.1575 63.77953, 340.1575 58.11024\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/></g></g></svg>\n</div><figcaption>Fig. 4. Ring modulator. Transpone VCO 3 en +5, +7 y +12 semitonos y compara; luego desafina unos cents para obtener batido.</figcaption></figure>\n<aside class=\"note\"><strong class=\"lbl\">Ejercicio</strong> Práctica del manual, adaptada: mutea los osciladores 1–3 en el mixer y deja solo la salida del ring mod. Fija VCO 3 una quinta sobre VCO 1. Luego mueve VCO 1 en semitonos: algunos intervalos suenan consonantes y otros disonantes. Los cents producen batido.</aside>\n<h3>Envíos a efectos: pre y post</h3>\n<p>El hardware tiene un nivel pre-FX y otro post-FX: uno controla cuánta señal entra a la cadena de efectos, el otro cuánto vuelve. Un pre-FX demasiado alto clipea dentro de los efectos aunque el volumen final sea moderado. En VCV la cadena es explícita: ajusta la ganancia antes de cada efecto y usa la perilla MIX de cada uno como balance seco/húmedo.</p>\n<div class=\"tablewrap\"><table><thead><tr><th>Parámetro de hardware</th><th>Equivalente en VCV</th></tr></thead><tbody><tr><td>Osc 1/2/3 level, Noise level</td><td>Canales de Mixer / VCV Mixer</td></tr><tr><td>Ring mod 1*3, 2*3 level</td><td>A*B+C (Befaco) → canal del mixer</td></tr><tr><td>Solo</td><td>Mutes</td></tr><tr><td>Pre-FX level</td><td>Ganancia de entrada a la cadena de efectos</td></tr><tr><td>Post-FX level</td><td>Nivel de salida tras efectos / MIX de cada efecto</td></tr></tbody></table></div>"}, {"n": 4, "kick": "TIMBRE", "title": "Filtros", "html": "<p>El filtro atenúa parte del espectro. Es el módulo con más impacto en el carácter de un patch y el principal destino de modulación.</p>\n<h3>Tipos y pendiente</h3>\n<div class=\"tablewrap\"><table><thead><tr><th>Tipo</th><th>Deja pasar</th><th>Sonido</th></tr></thead><tbody><tr><td>Pasa bajos (LP)</td><td>Frecuencias bajo el cutoff</td><td>Cálido, opaco; el estándar sustractivo</td></tr><tr><td>Pasa altos (HP)</td><td>Frecuencias sobre el cutoff</td><td>Delgado; limpia graves, aísla brillo</td></tr><tr><td>Pasa banda (BP)</td><td>Una banda alrededor del cutoff</td><td>Nasal, telefónico, vocal</td></tr><tr><td>Rechaza banda (notch)</td><td>Todo excepto una banda</td><td>Hueco; tipo phaser si se modula</td></tr></tbody></table></div>\n<p>La pendiente mide cuán rápido atenúa el filtro más allá del cutoff: 12 dB/octava (2 polos) suena suave y abierto; 24 dB/octava (4 polos) corta con más decisión. <b>VCF</b> (Fundamental) es un ladder de 4 polos con salidas LPF y HPF simultáneas. Para BP, notch y pendiente seleccionable, <b>VCF</b> de Bogaudio ofrece los cuatro modos.</p>\n<h3>Cutoff y resonancia</h3>\n<p>El cutoff fija dónde empieza la atenuación. La resonancia realimenta la salida del filtro hacia su entrada y crea un pico en torno al cutoff. Con resonancia moderada el barrido del cutoff se vuelve audible y “silbante”. Con resonancia alta el filtro auto-oscila y genera una sinusoide en el cutoff: el filtro se vuelve un oscilador.</p>\n<h4>Drive</h4>\n<p>DRIVE amplifica la entrada antes del núcleo del filtro y lo satura. Agrega armónicos y compresión natural. Conviene compensar el volumen después: más drive, más nivel.</p>\n<h3>Keyboard tracking</h3>\n<p>Con cutoff fijo, las notas agudas suenan más opacas que las graves porque más de sus armónicos quedan sobre el cutoff. El key tracking mueve el cutoff con la nota. Conecta la V/Oct de MIDI-CV a la entrada FREQ del VCF. Como esa entrada suele recibir también la envolvente, suma ambas señales en un mixer antes del VCF (Fig. 5). Con el atenuador FREQ CV al 100 % el cutoff sigue al teclado aproximadamente a 1 V/oct y el timbre se mantiene constante en todo el registro; al 50 % el seguimiento es parcial. Con resonancia auto-oscilante y tracking completo, el filtro se toca como un oscilador afinado.</p>\n<h3>Envolvente de filtro</h3>\n<p>La envolvente que abre y cierra el cutoff en cada nota es la segunda mitad del sonido sustractivo. Un ADSR propio para el filtro, separado del que controla el VCA, da cortes tipo pluck (ataque 0, decay corto, sustain bajo) o barridos lentos (ataque largo). La cantidad de envolvente se controla con el atenuverter FREQ CV del VCF. Un valor negativo invierte la envolvente: el filtro se cierra al tocar.</p>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 5. Dos envolventes: ADSR 2 modula el cutoff, ADSR 1 la amplitud. El VCF tiene una sola entrada FREQ: un mixer suma la envolvente y la V/Oct (key tracking) antes de entrar.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 187\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip6\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"187.08661417322836\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-187)\" style=\"clip-path: url(#clip6)\"><g transform=\"\"><rect x=\"0.0\" y=\"70.86614173228347\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"21.197404035433074\" y=\"92.97637795275591\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,185) scale(1,-1)\">MIDI-CV</text><rect x=\"93.54330708661418\" y=\"150.23622047244095\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"122.85096502829725\" y=\"172.3464566929134\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,344) scale(1,-1)\">VCO</text><text x=\"125.00355291892225\" y=\"157.60629921259843\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,315) scale(1,-1)\">SAW</text><rect x=\"93.54330708661418\" y=\"70.86614173228347\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"116.08592596579726\" y=\"92.97637795275591\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,185) scale(1,-1)\">ADSR 2</text><text x=\"124.95889959860976\" y=\"78.23622047244095\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,156) scale(1,-1)\">filtro</text><rect x=\"93.54330708661418\" y=\"8.503937007874015\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"116.08592596579726\" y=\"30.61417322834646\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,61) scale(1,-1)\">ADSR 1</text><text x=\"118.71895819235976\" y=\"15.874015748031496\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,31) scale(1,-1)\">amplitud</text><rect x=\"187.08661417322836\" y=\"110.55118110236222\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"213.36800258366142\" y=\"132.66141732283467\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,265) scale(1,-1)\">Mixer</text><text x=\"207.46419398991142\" y=\"117.9212598425197\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,235) scale(1,-1)\">env + V/Oct</text><rect x=\"280.62992125984255\" y=\"150.23622047244095\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"310.5721495140256\" y=\"172.3464566929134\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,344) scale(1,-1)\">VCF</text><text x=\"313.7783506859006\" y=\"157.60629921259843\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,315) scale(1,-1)\">LPF</text><rect x=\"377.0078740157481\" y=\"150.23622047244095\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"406.60498508243114\" y=\"172.3464566929134\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,344) scale(1,-1)\">VCA</text><polyline points=\"76.53543 97.79528, 85.03937 97.79528, 85.03937 168.6614, 89.00787 168.6614\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"93.54331 168.6614, 87.87402 171.4961, 87.87402 165.8268\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"87.8740157480315\" y=\"136.06299212598427\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,272) scale(1,-1)\">V/Oct</text><polyline points=\"170.0787 168.6614, 225.3543 168.6614, 225.3543 168.6614, 276.0945 168.6614\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"280.6299 168.6614, 274.9606 171.4961, 274.9606 165.8268\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"357.1654 168.6614, 367.0866 168.6614, 367.0866 168.6614, 372.4724 168.6614\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"377.0079 168.6614, 371.3386 171.4961, 371.3386 165.8268\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"76.53543 86.45669, 85.03937 86.45669, 85.03937 89.29134, 89.00787 89.29134\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"93.54331 89.29134, 87.87402 92.12598, 87.87402 86.45669\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 0.1; fill: var(--gate); fill-rule: evenodd;\"/><text x=\"87.8740157480315\" y=\"90.70866141732283\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--gate); stroke:none;\" transform=\"translate(0,181) scale(1,-1)\">GATE</text><polyline points=\"76.53543 80.7874, 85.03937 80.7874, 85.03937 26.92913, 89.00787 26.92913\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"93.54331 26.92913, 87.87402 29.76378, 87.87402 24.09449\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 0.1; fill: var(--gate); fill-rule: evenodd;\"/><polyline points=\"76.53543 92.12598, 85.03937 92.12598, 85.03937 123.3071, 182.5512 123.3071\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"187.0866 123.3071, 181.4173 126.1417, 181.4173 120.4724\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"87.8740157480315\" y=\"110.55118110236221\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,221) scale(1,-1)\">key track</text><polyline points=\"170.0787 89.29134, 178.5827 89.29134, 178.5827 134.6457, 182.5512 134.6457\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"187.0866 134.6457, 181.4173 137.4803, 181.4173 131.811\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><polyline points=\"263.622 128.9764, 272.126 128.9764, 272.126 160.1575, 276.0945 160.1575\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"280.6299 160.1575, 274.9606 162.9921, 274.9606 157.3228\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"274.96062992125985\" y=\"147.40157480314963\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,294) scale(1,-1)\">FREQ</text><polyline points=\"170.0787 26.92913, 365.6693 26.92913, 365.6693 160.1575, 372.4724 160.1575\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"377.0079 160.1575, 371.3386 162.9921, 371.3386 157.3228\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"368.503937007874\" y=\"96.37795275590553\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,192) scale(1,-1)\">CV</text></g></g></svg>\n</div><figcaption>Fig. 5. Dos envolventes: ADSR 2 modula el cutoff, ADSR 1 la amplitud. El VCF tiene una sola entrada FREQ: un mixer suma la envolvente y la V/Oct (key tracking) antes de entrar.</figcaption></figure>\n<aside class=\"note\"><strong class=\"lbl\">Tip</strong> Para escuchar el efecto de la envolvente de filtro, el cutoff base debe quedar bajo o medio. Con el filtro completamente abierto la envolvente no tiene nada que abrir.</aside>\n<h3>Routing: dos filtros</h3>\n<p>Con dos filtros, el orden de conexión define el resultado. El hardware ofrece configuraciones fijas; en VCV las cableas.</p>\n<div class=\"tablewrap\"><table><thead><tr><th>Configuración</th><th>Cableado</th><th>Resultado</th></tr></thead><tbody><tr><td>Bypass</td><td>Mixer → VCA</td><td>Sin filtrado</td></tr><tr><td>Single</td><td>Mixer → VCF 1 → VCA</td><td>Un solo filtro</td></tr><tr><td>Serie</td><td>Mixer → VCF 1 → VCF 2 → VCA</td><td>Pendientes acumuladas; LP + HP = pasa banda variable</td></tr><tr><td>Paralelo</td><td>Mixer → VCF 1 y VCF 2 → Mixer → VCA</td><td>Dos timbres sumados; LP + HP con huecos = formantes</td></tr><tr><td>Paralelo 2</td><td>VCO 3 + ruido → VCF 1; resto → VCF 2</td><td>Cada fuente con su propio filtro</td></tr><tr><td>Drum</td><td>Como paralelo 2, VCF 1 alimenta además VCF 2</td><td>Capas encadenadas para percusión</td></tr></tbody></table></div>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 6. Filtros en paralelo. El balance del hardware es la proporción entre los dos canales del mixer final.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 130\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip7\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"130.3937007874016\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-130)\" style=\"clip-path: url(#clip7)\"><g transform=\"\"><rect x=\"0.0\" y=\"53.85826771653545\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"26.281388410433074\" y=\"75.9685039370079\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,151) scale(1,-1)\">Mixer</text><text x=\"27.166324933870573\" y=\"61.22834645669293\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,122) scale(1,-1)\">fuentes</text><rect x=\"113.38582677165356\" y=\"93.54330708661419\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"139.36106283833664\" y=\"115.65354330708664\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,231) scale(1,-1)\">VCF 1</text><text x=\"146.53425619771164\" y=\"100.91338582677167\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,201) scale(1,-1)\">LPF</text><rect x=\"113.38582677165356\" y=\"14.17322834645671\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"139.36106283833664\" y=\"36.283464566929155\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,72) scale(1,-1)\">VCF 2</text><text x=\"139.28745443989914\" y=\"21.543307086614192\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,43) scale(1,-1)\">HPF / BP</text><rect x=\"226.7716535433071\" y=\"53.85826771653545\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"253.0530419537402\" y=\"75.9685039370079\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,151) scale(1,-1)\">Mixer</text><text x=\"253.42518550842772\" y=\"61.22834645669293\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,122) scale(1,-1)\">balance</text><rect x=\"340.15748031496065\" y=\"53.85826771653545\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"369.7545913816437\" y=\"75.9685039370079\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,151) scale(1,-1)\">VCA</text><polyline points=\"76.53543 77.95276, 94.96063 77.95276, 94.96063 111.9685, 108.8504 111.9685\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"113.3858 111.9685, 107.7165 114.8031, 107.7165 109.1339\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"76.53543 66.61417, 94.96063 66.61417, 94.96063 32.59843, 108.8504 32.59843\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"113.3858 32.59843, 107.7165 35.43307, 107.7165 29.76378\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"189.9213 111.9685, 208.3465 111.9685, 208.3465 80.7874, 222.2362 80.7874\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"226.7717 80.7874, 221.1024 83.62205, 221.1024 77.95276\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"189.9213 32.59843, 208.3465 32.59843, 208.3465 63.77953, 222.2362 63.77953\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"226.7717 63.77953, 221.1024 66.61417, 221.1024 60.94488\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"303.3071 72.28346, 321.7323 72.28346, 321.7323 72.28346, 335.622 72.28346\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"340.1575 72.28346, 334.4882 75.11811, 334.4882 69.44882\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/></g></g></svg>\n</div><figcaption>Fig. 6. Filtros en paralelo. El balance del hardware es la proporción entre los dos canales del mixer final.</figcaption></figure>\n<h4>Traducción de parámetros</h4>\n<div class=\"tablewrap\"><table><thead><tr><th>Parámetro de hardware</th><th>Equivalente en VCV</th></tr></thead><tbody><tr><td>Filter type</td><td>Salida LPF/HPF del VCF o modo del VCF de Bogaudio</td></tr><tr><td>Frequency / Resonance</td><td>FREQ / RES del VCF</td></tr><tr><td>Drive</td><td>DRIVE del VCF</td></tr><tr><td>Key track</td><td>V/Oct + envolvente en un mixer → FREQ del VCF; nivel 0–100 %</td></tr><tr><td>Env 2 depth</td><td>Nivel de ADSR 2 en ese mixer; signo con el atenuverter FREQ CV</td></tr><tr><td>Routing / Balance</td><td>Cableado serie/paralelo + mixer final</td></tr><tr><td>Freq link / Res link</td><td>Una misma CV → ambos VCF (Ctrl+clic para duplicar el cable)</td></tr></tbody></table></div>"}, {"n": 5, "kick": "CONTORNO", "title": "Envolventes", "html": "<p>Una envolvente es un voltaje que describe cómo cambia un parámetro durante la vida de una nota. El gate la dispara y su forma depende de cuatro etapas.</p>\n<h3>ADSR</h3>\n<div class=\"tablewrap\"><table><thead><tr><th>Etapa</th><th>Qué controla</th><th>Parámetro</th></tr></thead><tbody><tr><td>Attack</td><td>Tiempo desde 0 hasta el máximo tras el gate on</td><td>Tiempo</td></tr><tr><td>Decay</td><td>Tiempo desde el máximo hasta el nivel de sustain</td><td>Tiempo</td></tr><tr><td>Sustain</td><td>Nivel mantenido mientras el gate siga activo</td><td>Nivel</td></tr><tr><td>Release</td><td>Tiempo desde el nivel actual hasta 0 tras el gate off</td><td>Tiempo</td></tr></tbody></table></div>\n<p>Tres de los cuatro parámetros son tiempos y uno es un nivel. Ese detalle explica la mayoría de las confusiones: subir sustain no alarga la nota, la mantiene más fuerte mientras sostienes la tecla.</p>\n<h4>Formas de referencia</h4>\n<div class=\"tablewrap\"><table><thead><tr><th>Sonido</th><th>A</th><th>D</th><th>S</th><th>R</th></tr></thead><tbody><tr><td>Órgano</td><td>0</td><td>—</td><td>máx.</td><td>corto</td></tr><tr><td>Pluck / bajo percusivo</td><td>0</td><td>corto</td><td>0</td><td>corto</td></tr><tr><td>Piano / campana</td><td>0</td><td>largo</td><td>0</td><td>medio</td></tr><tr><td>Pad / cuerdas</td><td>largo</td><td>medio</td><td>alto</td><td>largo</td></tr><tr><td>Brass</td><td>medio</td><td>corto</td><td>medio-alto</td><td>medio</td></tr></tbody></table></div>\n<p><b>ADSR</b> (Fundamental) tiene entradas CV para cada etapa, entrada GATE y entrada RETRIG. Esas entradas CV permiten todo lo que el hardware llama “tracking”.</p>\n<h3>Velocity</h3>\n<p>Velocity mide la fuerza con que tocas. MIDI-CV la entrega en VEL (0–10 V). Para que la velocity controle el volumen, multiplica la envolvente por VEL: ADSR → entrada del VCA, VEL → CV del VCA, y el VCA resultante como CV del VCA de audio. Una alternativa más directa: VEL hacia la entrada CV de un segundo VCA en serie. Para que la velocity controle el brillo, VEL → FREQ CV del VCF con un atenuador moderado.</p>\n<h3>Tracking de envolvente</h3>\n<p>En instrumentos acústicos las notas agudas decaen más rápido que las graves. El tracking reproduce ese comportamiento: la posición en el teclado modifica los tiempos de la envolvente. En VCV, conecta la V/Oct a la entrada CV de DECAY del ADSR con el atenuverter negativo: cuanto más aguda la nota, más corto el decay. La nota de referencia es el punto donde la V/Oct vale 0 V (C4); para mover la referencia, suma un offset.</p>\n<h3>Retrigger y legato</h3>\n<p>En modo multi-trigger cada nota reinicia la envolvente completa. En legato, solo la primera nota de una frase dispara la envolvente; las siguientes notas ligadas cambian el pitch sin reiniciar el contorno. En VCV, MIDI-CV entrega un pulso en RTRG para cada nota nueva: conéctalo a la entrada RETRIG del ADSR para multi-trigger, o déjalo desconectado y usa un solo canal (monofónico) para legato. Glide (portamento) se obtiene pasando la V/Oct por un módulo de slew.</p>\n<h3>Envolventes en loop</h3>\n<p>Una envolvente que se repite antes de llegar al sustain produce sonidos rítmicos o de “aleteo”. El hardware lo llama repeat. En VCV, un generador de funciones con modo cycle cumple esa función: <b>Rampage</b> (Befaco) con CYCLE activo se comporta como un LFO cuya forma defines con rise y fall. También sirve como envolvente AR clásica cuando el ciclo está apagado.</p>\n<h3>Envolventes adicionales</h3>\n<p>El hardware tiene dos envolventes dedicadas (amplitud y filtro) y cuatro asignables vía matriz. En VCV agrega tantos ADSR como necesites. El gate de MIDI-CV alimenta a todos: Ctrl+clic sobre la salida GATE para cada cable nuevo. Una tercera envolvente hacia la POS del WT VCO, o hacia la FM del VCO para un “pitch drop” en el ataque, es un buen comienzo.</p>\n<h4>Delay de envolvente</h4>\n<p>Un delay retrasa el inicio de la envolvente. Útil para que una modulación aparezca solo en notas sostenidas. <b>DADSR(H)</b> de Bogaudio incluye la etapa de delay; en Fundamental puedes aproximarlo con un ADSR de ataque largo multiplicado (VCA) por otro.</p>\n<div class=\"tablewrap\"><table><thead><tr><th>Parámetro de hardware</th><th>Equivalente en VCV</th></tr></thead><tbody><tr><td>Attack / Decay / Sustain / Release</td><td>Perillas A D S R del ADSR</td></tr><tr><td>Velocity</td><td>VEL de MIDI-CV → CV de un VCA en serie</td></tr><tr><td>Attack track / Decay track</td><td>V/Oct → CV de ATTACK / DECAY con atenuverter</td></tr><tr><td>Level track</td><td>V/Oct → CV de un VCA, atenuverter ±</td></tr><tr><td>Multi-trigger / Legato</td><td>RTRG → RETRIG del ADSR, o sin RETRIG en modo mono</td></tr><tr><td>Repeat</td><td>Rampage (Befaco) en modo CYCLE</td></tr><tr><td>Envelope delay</td><td>DADSRH (Bogaudio)</td></tr><tr><td>Attack / Decay slope</td><td>Curvas del generador (Rampage tiene SHAPE)</td></tr></tbody></table></div>"}, {"n": 6, "kick": "MOVIMIENTO", "title": "LFOs", "html": "<p>Un LFO (low frequency oscillator) es un oscilador por debajo del rango audible, normalmente 0,01–20 Hz. No se escucha; se usa como fuente de modulación cíclica.</p>\n<h3>Destino y efecto</h3>\n<div class=\"tablewrap\"><table><thead><tr><th>Destino</th><th>Efecto</th><th>Onda / velocidad típica</th></tr></thead><tbody><tr><td>Pitch del VCO</td><td>Vibrato</td><td>Seno o triángulo, 4–7 Hz, profundidad pequeña</td></tr><tr><td>Cutoff del VCF</td><td>Wah, barrido</td><td>Triángulo o seno, lento</td></tr><tr><td>CV del VCA</td><td>Trémolo</td><td>Seno, 3–8 Hz</td></tr><tr><td>PWM</td><td>Pulso que respira</td><td>Triángulo, 0,1–1 Hz</td></tr><tr><td>Pitch, onda cuadrada</td><td>Trino entre dos notas</td><td>Cuadrada, profundidad = intervalo</td></tr><tr><td>Cutoff, sample &amp; hold</td><td>Notas aleatorias de filtro</td><td>Random sincronizado a tempo</td></tr><tr><td>POS del WT VCO</td><td>Timbre que evoluciona</td><td>Muy lento</td></tr></tbody></table></div>\n<p><b>LFO</b> (Fundamental) entrega SIN, TRI, SAW y SQR, tiene entrada FM, PW para la cuadrada, entrada RESET y switches de offset (unipolar/bipolar) e inversión. <b>Random</b> cubre sample &amp; hold y ruido suavizado.</p>\n<h4>Bipolar y unipolar</h4>\n<p>Un LFO bipolar (±5 V) mueve el destino hacia arriba y hacia abajo del valor de la perilla. Un LFO unipolar (0–10 V) solo lo mueve hacia un lado. Para vibrato, bipolar; para un trémolo que nunca supere el volumen base, unipolar e invertido.</p>\n<h3>Fade in, fade out, gate in, gate out</h3>\n<p>El hardware puede retrasar o desvanecer la acción del LFO. El vibrato que entra después de sostener la nota es el ejemplo clásico. En VCV la técnica es una multiplicación: LFO → entrada de un VCA, envolvente → CV del VCA.</p>\n<div class=\"tablewrap\"><table><thead><tr><th>Modo</th><th>Envolvente que controla el VCA</th></tr></thead><tbody><tr><td>Fade in</td><td>ADSR con attack largo, sustain máx. El LFO crece gradualmente</td></tr><tr><td>Gate in</td><td>ADSR con delay (DADSRH) y attack 0. El LFO aparece de golpe tras un tiempo</td></tr><tr><td>Fade out</td><td>ADSR con attack 0, decay largo, sustain 0. El LFO se desvanece</td></tr><tr><td>Gate out</td><td>Envolvente con attack 0, decay casi nulo tras un tiempo fijo (DADSRH: hold)</td></tr></tbody></table></div>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 7. Vibrato con fade in. El gate de MIDI-CV dispara el ADSR; el VCA multiplica LFO × envolvente.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 113\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip8\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"113.38582677165356\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-113)\" style=\"clip-path: url(#clip8)\"><g transform=\"\"><rect x=\"0.0\" y=\"76.53543307086615\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"30.020157941683074\" y=\"98.64566929133859\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,197) scale(1,-1)\">LFO</text><text x=\"25.799357160433072\" y=\"83.90551181102363\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,167) scale(1,-1)\">SIN 5 Hz</text><rect x=\"0.0\" y=\"2.8346456692913335\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"26.509611066683075\" y=\"24.944881889763778\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,49) scale(1,-1)\">ADSR</text><text x=\"27.794352277620572\" y=\"10.204724409448815\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,20) scale(1,-1)\">A largo</text><rect x=\"119.05511811023624\" y=\"42.519685039370074\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"148.6522291769193\" y=\"64.62992125984252\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,129) scale(1,-1)\">VCA</text><rect x=\"238.11023622047247\" y=\"42.519685039370074\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"267.41789416215556\" y=\"64.62992125984252\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,129) scale(1,-1)\">VCO</text><text x=\"272.13588732621804\" y=\"49.889763779527556\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,99) scale(1,-1)\">FM</text><polyline points=\"76.53543 94.96063, 97.79528 94.96063, 97.79528 66.61417, 114.5197 66.61417\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"119.0551 66.61417, 113.3858 69.44882, 113.3858 63.77953\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"100.62992125984253\" y=\"83.62204724409449\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,167) scale(1,-1)\">IN</text><polyline points=\"76.53543 21.25984, 97.79528 21.25984, 97.79528 55.27559, 114.5197 55.27559\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"119.0551 55.27559, 113.3858 58.11024, 113.3858 52.44094\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"100.62992125984253\" y=\"41.10236220472441\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,82) scale(1,-1)\">CV</text><polyline points=\"195.5906 60.94488, 216.8504 60.94488, 216.8504 60.94488, 233.5748 60.94488\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"238.1102 60.94488, 232.4409 63.77953, 232.4409 58.11024\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"206.86713751845477\" y=\"64.62992125984252\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,129) scale(1,-1)\">FM</text></g></g></svg>\n</div><figcaption>Fig. 7. Vibrato con fade in. El gate de MIDI-CV dispara el ADSR; el VCA multiplica LFO × envolvente.</figcaption></figure>\n<h3>Sincronización</h3>\n<p>Un LFO sincronizado a tempo produce modulación rítmica: un filtro que se abre cada negra, un trémolo en corcheas. En VCV, un reloj maestro (<b>Clocked</b> de Impromptu, o CLK de MIDI-CV si el tempo viene del DAW) alimenta la entrada RESET del LFO. Con la frecuencia del LFO ajustada cerca del tempo, el reset alinea la fase en cada pulso.</p>\n<h4>Key sync y LFO por voz</h4>\n<p>Con key sync, el LFO reinicia su fase en cada nota: todas las notas empiezan la modulación igual. Sin key sync, el LFO corre libre y cada nota cae en un punto distinto del ciclo. En VCV conecta el gate (o RTRG) a RESET para key sync. Con un cable polifónico en RESET, el LFO de Fundamental genera un LFO independiente por voz.</p>\n<div class=\"tablewrap\"><table><thead><tr><th>Parámetro de hardware</th><th>Equivalente en VCV</th></tr></thead><tbody><tr><td>Waveform</td><td>Salida SIN/TRI/SAW/SQR del LFO; Random para S&amp;H</td></tr><tr><td>Rate</td><td>FREQ del LFO</td></tr><tr><td>Rate sync</td><td>Reloj → RESET; o LFO con entrada de clock</td></tr><tr><td>Key sync / Phase</td><td>Gate → RESET</td></tr><tr><td>Delay + Fade in/out, Gate in/out</td><td>LFO × envolvente en un VCA</td></tr><tr><td>Delay trigger: legato / re-trig</td><td>Envolvente que controla el VCA con o sin RETRIG</td></tr><tr><td>Slew</td><td>Módulo de slew a la salida del LFO</td></tr></tbody></table></div>"}, {"n": 7, "kick": "CONTROL", "title": "La matriz de modulación", "html": "<p>El hardware define la modulación como slots: cada slot conecta una o dos fuentes con un destino y fija una profundidad. Cuando un slot tiene dos fuentes, sus valores se <b>multiplican</b>; si cualquiera vale cero, no hay modulación. Cuando varios slots apuntan al mismo destino, sus efectos se <b>suman</b>. Esas dos reglas describen todo lo que hace una matriz de modulación, y ambas tienen un módulo directo en VCV.</p>\n<h3>Anatomía de un slot</h3>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 8. Un slot de la matriz en VCV. Con una sola fuente, omite el VCA. Muchas entradas CV ya tienen atenuverter propio y hacen innecesario el 8vert.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 113\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip9\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"113.38582677165356\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-113)\" style=\"clip-path: url(#clip9)\"><g transform=\"\"><rect x=\"0.0\" y=\"76.53543307086615\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"19.323380597933074\" y=\"98.64566929133859\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,197) scale(1,-1)\">Fuente 1</text><text x=\"25.28512376199557\" y=\"83.90551181102363\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,167) scale(1,-1)\">p.ej. LFO</text><rect x=\"0.0\" y=\"8.503937007874015\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"19.323380597933074\" y=\"30.61417322834646\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,61) scale(1,-1)\">Fuente 2</text><text x=\"15.05519212137057\" y=\"15.874015748031496\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,31) scale(1,-1)\">p.ej. Mod wheel</text><rect x=\"113.38582677165356\" y=\"42.519685039370074\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"142.98293783833662\" y=\"64.62992125984252\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,129) scale(1,-1)\">VCA</text><text x=\"135.96006186177414\" y=\"49.889763779527556\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,99) scale(1,-1)\">multiplicar</text><rect x=\"226.7716535433071\" y=\"42.519685039370074\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"253.6505028912402\" y=\"64.62992125984252\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,129) scale(1,-1)\">8vert</text><text x=\"243.71668941467772\" y=\"49.889763779527556\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,99) scale(1,-1)\">profundidad ±</text><rect x=\"340.15748031496065\" y=\"42.519685039370074\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"361.99687653789374\" y=\"64.62992125984252\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,129) scale(1,-1)\">Destino</text><text x=\"361.8674575925812\" y=\"49.889763779527556\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,99) scale(1,-1)\">entrada CV</text><polyline points=\"76.53543 94.96063, 94.96063 94.96063, 94.96063 66.61417, 108.8504 66.61417\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"113.3858 66.61417, 107.7165 69.44882, 107.7165 63.77953\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"97.79527559055119\" y=\"83.62204724409449\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,167) scale(1,-1)\">IN</text><polyline points=\"76.53543 26.92913, 94.96063 26.92913, 94.96063 55.27559, 108.8504 55.27559\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"113.3858 55.27559, 107.7165 58.11024, 107.7165 52.44094\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"97.79527559055119\" y=\"43.93700787401575\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,87) scale(1,-1)\">CV</text><polyline points=\"189.9213 60.94488, 208.3465 60.94488, 208.3465 60.94488, 222.2362 60.94488\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"226.7717 60.94488, 221.1024 63.77953, 221.1024 58.11024\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><polyline points=\"303.3071 60.94488, 321.7323 60.94488, 321.7323 60.94488, 335.622 60.94488\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"340.1575 60.94488, 334.4882 63.77953, 334.4882 58.11024\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/></g></g></svg>\n</div><figcaption>Fig. 8. Un slot de la matriz en VCV. Con una sola fuente, omite el VCA. Muchas entradas CV ya tienen atenuverter propio y hacen innecesario el 8vert.</figcaption></figure>\n<div class=\"tablewrap\"><table><thead><tr><th>Concepto de la matriz</th><th>Implementación en VCV</th></tr></thead><tbody><tr><td>Fuente</td><td>Cualquier salida: LFO, ADSR, MIDI-CV (VEL, AFT, MW, PW), Random, secuenciador</td></tr><tr><td>Fuente 1 × Fuente 2</td><td>VCA: una fuente en la entrada, la otra en CV. Bipolar × bipolar: A*B+C</td></tr><tr><td>Profundidad (depth)</td><td>Atenuverter de la entrada o 8vert</td></tr><tr><td>Varios slots al mismo destino</td><td>Mixer o Sum antes de la entrada</td></tr><tr><td>Destino</td><td>Cualquier entrada CV del rack</td></tr></tbody></table></div>\n<h3>Los cuatro casos del manual</h3>\n<p>El hardware ilustra la diferencia entre multiplicar y sumar con LFO y mod wheel:</p>\n<ul><li><b>Un slot, LFO × mod wheel, rueda arriba:</b> vibrato completo.</li><li><b>Un slot, LFO × mod wheel, rueda abajo:</b> ningún vibrato. La rueda actúa como control de profundidad.</li><li><b>Dos slots, LFO y mod wheel por separado, rueda abajo:</b> vibrato completo. La rueda desplaza el pitch, no controla el vibrato.</li><li><b>Dos slots, rueda arriba:</b> vibrato completo y el pitch desplazado hacia arriba por la rueda.</li></ul>\n<p>En VCV el primer par es Fig. 8 con LFO y MW. El segundo par usa un mixer: LFO y MW entran en canales separados y la suma va a la FM del VCO.</p>\n<h3>Fuentes de expresión desde MIDI-CV</h3>\n<div class=\"tablewrap\"><table><thead><tr><th>Salida</th><th>Rango</th><th>Destinos útiles</th></tr></thead><tbody><tr><td>VEL</td><td>0–10 V</td><td>Volumen (VCA), brillo (cutoff), ataque más corto</td></tr><tr><td>AFT</td><td>0–10 V</td><td>Vibrato, cutoff, profundidad de LFO</td></tr><tr><td>MW</td><td>0–10 V</td><td>Profundidad de vibrato, cutoff, POS de wavetable</td></tr><tr><td>PW</td><td>±5 V</td><td>Pitch bend; también cutoff o mezcla</td></tr><tr><td>MIDI-CC (módulo aparte)</td><td>0–10 V</td><td>Perillas físicas de tu controlador → cualquier destino</td></tr></tbody></table></div>\n<aside class=\"note\"><strong class=\"lbl\">Tip</strong> Una matriz admite combinaciones que se pisan entre sí. Agrega una modulación a la vez y escucha el resultado antes de sumar la siguiente. El Scope en la entrada del destino muestra el voltaje total que recibe.</aside>\n<h4>Mapeo de perillas</h4>\n<p>La función de “animate touch” del hardware asigna perillas físicas a parámetros. En VCV, <b>MIDI-Map</b> (Core) asigna cualquier CC de tu controlador a cualquier perilla del rack sin cables: haz clic en un slot de MIDI-Map, luego en la perilla destino, y mueve la perilla física.</p>"}, {"n": 8, "kick": "NOTAS", "title": "Arpegiador y acordes", "html": "<p>El arpegiador convierte las notas sostenidas en una secuencia: toca un acorde y el arp lo reproduce nota a nota al ritmo de un reloj. El chorder hace lo inverso: una sola tecla dispara un acorde completo. En el hardware el arp va antes del chorder, de modo que se arpegia el acorde completo resultante.</p>\n<h3>Reloj</h3>\n<p>Todo lo rítmico en VCV necesita un reloj. <b>Clocked</b> (Impromptu) genera un reloj maestro con BPM y salidas con multiplicación y división. Si tocas sobre un DAW, el reloj MIDI llega por CLK de MIDI-CV. El tempo del hardware (ClockBPM) es la perilla BPM del reloj maestro.</p>\n<h3>Arpegiador con módulos de Fundamental</h3>\n<p>La polifonía de VCV permite construir un arp simple sin plugins externos. MIDI-CV entrega las notas sostenidas en un cable polifónico. <b>Split</b> separa los canales; un <b>Sequential Switch</b> 4→1 avanza por ellos en cada pulso del reloj. La salida es una V/Oct monofónica que recorre el acorde en orden ascendente (Up). El gate del arp sale del mismo reloj, pasado por un ADSR corto.</p>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 9. Arpegiador Up de hasta cuatro notas. Con MIDI-CV en modo Reset, los canales se ordenan de forma estable.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 124\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip10\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"124.7244094488189\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-124)\" style=\"clip-path: url(#clip10)\"><g transform=\"\"><rect x=\"0.0\" y=\"87.8740157480315\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"21.197404035433074\" y=\"109.98425196850394\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,219) scale(1,-1)\">MIDI-CV</text><text x=\"24.174552472933073\" y=\"95.24409448818898\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,190) scale(1,-1)\">4 canales</text><rect x=\"93.54330708661418\" y=\"87.8740157480315\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"121.93250799704725\" y=\"109.98425196850394\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,219) scale(1,-1)\">Split</text><rect x=\"187.08661417322836\" y=\"87.8740157480315\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"200.22942836491143\" y=\"109.98425196850394\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,219) scale(1,-1)\">Seq. Switch</text><text x=\"219.1287935992864\" y=\"95.24409448818898\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,190) scale(1,-1)\">4→1</text><rect x=\"93.54330708661418\" y=\"14.173228346456682\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"115.03201971579726\" y=\"36.283464566929126\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,72) scale(1,-1)\">Clocked</text><text x=\"115.40452948142226\" y=\"21.543307086614163\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,43) scale(1,-1)\">Impromptu</text><rect x=\"280.62992125984255\" y=\"87.8740157480315\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"295.7822081077756\" y=\"109.98425196850394\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,219) scale(1,-1)\">VCO → VCF</text><rect x=\"280.62992125984255\" y=\"14.173228346456682\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"307.1395323265256\" y=\"36.283464566929126\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,72) scale(1,-1)\">ADSR</text><text x=\"311.2964903343381\" y=\"21.543307086614163\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,43) scale(1,-1)\">corto</text><rect x=\"377.0078740157481\" y=\"87.8740157480315\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"406.60498508243114\" y=\"109.98425196850394\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,219) scale(1,-1)\">VCA</text><polyline points=\"76.53543 106.2992, 85.03937 106.2992, 85.03937 106.2992, 89.00787 106.2992\" style=\"stroke: var(--poly); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"93.54331 106.2992, 87.87402 109.1339, 87.87402 103.4646\" style=\"stroke: var(--poly); stroke-linecap: butt; stroke-width: 0.1; fill: var(--poly); fill-rule: evenodd;\"/><text x=\"71.12007874015748\" y=\"109.98425196850394\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--poly); stroke:none;\" transform=\"translate(0,219) scale(1,-1)\">V/Oct</text><polyline points=\"170.0787 106.2992, 178.5827 106.2992, 178.5827 106.2992, 182.5512 106.2992\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"187.0866 106.2992, 181.4173 109.1339, 181.4173 103.4646\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"167.59600301427167\" y=\"109.98425196850394\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,219) scale(1,-1)\">1–4</text><polyline points=\"170.0787 32.59843, 178.5827 32.59843, 178.5827 97.79528, 182.5512 97.79528\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"187.0866 97.79528, 181.4173 100.6299, 181.4173 94.96063\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 0.1; fill: var(--gate); fill-rule: evenodd;\"/><text x=\"181.4173228346457\" y=\"68.03149606299212\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--gate); stroke:none;\" transform=\"translate(0,136) scale(1,-1)\">CLK</text><polyline points=\"263.622 106.2992, 272.126 106.2992, 272.126 106.2992, 276.0945 106.2992\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"280.6299 106.2992, 274.9606 109.1339, 274.9606 103.4646\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"258.20669291338584\" y=\"109.98425196850394\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,219) scale(1,-1)\">V/Oct</text><polyline points=\"170.0787 32.59843, 225.3543 32.59843, 225.3543 32.59843, 276.0945 32.59843\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"280.6299 32.59843, 274.9606 35.43307, 274.9606 29.76378\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 0.1; fill: var(--gate); fill-rule: evenodd;\"/><text x=\"211.58005890132878\" y=\"36.283464566929126\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--gate); stroke:none;\" transform=\"translate(0,72) scale(1,-1)\">GATE</text><polyline points=\"357.1654 106.2992, 367.0866 106.2992, 367.0866 106.2992, 372.4724 106.2992\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"377.0079 106.2992, 371.3386 109.1339, 371.3386 103.4646\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"357.1654 32.59843, 365.6693 32.59843, 365.6693 97.79528, 372.4724 97.79528\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"377.0079 97.79528, 371.3386 100.6299, 371.3386 94.96063\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"368.503937007874\" y=\"68.03149606299212\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,136) scale(1,-1)\">CV</text></g></g></svg>\n</div><figcaption>Fig. 9. Arpegiador Up de hasta cuatro notas. Con MIDI-CV en modo Reset, los canales se ordenan de forma estable.</figcaption></figure>\n<p>Modos de arpegio (down, up/down, random) y patrones de duración requieren más lógica. La Library tiene arpegiadores dedicados; busca “arpeggiator”. El ejercicio de construirlo a mano, sin embargo, deja claro qué hace un arp: un contador que indexa notas.</p>\n<h4>Octavas y swing</h4>\n<p>El rango de octavas del arp suma 1 V por octava a cada ciclo. <b>Octave</b> (Fundamental) desplaza una V/Oct en octavas enteras; un segundo Sequential Switch o un secuenciador de CV puede alternar el desplazamiento. El swing retrasa los pulsos pares del reloj: Clocked tiene control de swing.</p>\n<h3>Chorder: acordes desde una tecla</h3>\n<p>Un acorde es la misma V/Oct más offsets fijos: mayor = 0, 4/12, 7/12 V; menor = 0, 3/12, 7/12 V; séptima menor agrega 10/12 V. En VCV, toma la V/Oct de una voz, súmale cada offset con un módulo de offset con display y combina los resultados con <b>Merge</b> en un cable polifónico. El VCO polifónico recibe ese cable y suena el acorde. Pasar cada voz por un <b>Quantizer</b> (Fundamental) corrige errores de redondeo en los offsets.</p>\n<div class=\"tablewrap\"><table><thead><tr><th>Acorde</th><th>Intervalos (semitonos)</th><th>Offsets V/Oct</th></tr></thead><tbody><tr><td>Mayor</td><td>0 · 4 · 7</td><td>0 · 0,333 · 0,583</td></tr><tr><td>Menor</td><td>0 · 3 · 7</td><td>0 · 0,250 · 0,583</td></tr><tr><td>Séptima de dominante</td><td>0 · 4 · 7 · 10</td><td>+ 0,833</td></tr><tr><td>Menor séptima</td><td>0 · 3 · 7 · 10</td><td>+ 0,833</td></tr><tr><td>Sus4</td><td>0 · 5 · 7</td><td>0 · 0,417 · 0,583</td></tr><tr><td>Quinta (power chord)</td><td>0 · 7 · 12</td><td>0 · 0,583 · 1,000</td></tr></tbody></table></div>\n<p>La notación del hardware cuenta semitonos sobre la nota más baja: la tercera mayor aparece como 4 porque está 4 semitonos sobre la fundamental; la quinta, como 7. Es exactamente la columna de semitonos de la tabla.</p>"}, {"n": 9, "kick": "PROCESAMIENTO", "title": "Efectos", "html": "<p>Los efectos operan sobre la voz completa después del VCA. En el hardware ocupan slots con routing configurable en serie o paralelo; en VCV es una cadena de módulos que cableas en el orden que quieras.</p>\n<h4>Orden típico</h4>\n<p>Distorsión → EQ → compresor → chorus/phaser → delay → reverb. La distorsión primero, porque los efectos de tiempo después de ella suenan más limpios. La reverb al final, porque reverberar una distorsión de reverb produce barro. Cambiar el orden es parte del juego, no un error.</p>\n<h3>Distorsión</h3>\n<p>La distorsión hace pasar la señal por una transferencia no lineal; la forma de esa transferencia define qué armónicos aparecen. Cada tipo del hardware corresponde a una curva.</p>\n<div class=\"tablewrap\"><table><thead><tr><th>Tipo</th><th>Mecanismo</th><th>En VCV</th></tr></thead><tbody><tr><td>Diode / Valve</td><td>Saturación suave y progresiva</td><td>DRIVE del VCF; waveshapers de la Library</td></tr><tr><td>Clipper</td><td>Recorte duro en un umbral</td><td>Un VCA con ganancia &gt; 1 seguido de un limitador</td></tr><tr><td>Rectify</td><td>Invierte los semiciclos negativos</td><td>Rectificador (busca “rectifier”); duplica la frecuencia</td></tr><tr><td>BitsDown</td><td>Reduce resolución de amplitud</td><td>Bitcrusher</td></tr><tr><td>RateDown</td><td>Reduce frecuencia de muestreo</td><td>Sample rate reducer / decimator</td></tr><tr><td>Crossover</td><td>Hueco cerca de cero, como un ampli clase B</td><td>Waveshaper con zona muerta</td></tr></tbody></table></div>\n<aside class=\"note\"><strong class=\"lbl\">Tip</strong> La misma cantidad de distorsión produce volúmenes muy distintos según el tipo. Ajusta el nivel de salida cada vez que cambies de curva.</aside>\n<h3>Compresión</h3>\n<p>El compresor reduce la ganancia de lo que supera un umbral. Ratio fija cuánto: con 2:1, cada 2 dB sobre el umbral salen como 1 dB. Attack fija cuán rápido reacciona; un attack lento deja pasar el transiente y da más “punch” a bajos y percusión. Release (y hold, si existe) fija cuánto tarda en soltar; tiempos demasiado cortos producen “pumping” audible. El make-up gain o auto-gain compensa la pérdida de nivel. En la Library busca “compressor”.</p>\n<h3>Delay</h3>\n<p>El delay repite la señal tras un tiempo. Feedback devuelve la salida a la entrada y crea repeticiones sucesivas; sobre 100 % el delay auto-oscila. <b>Delay</b> (Fundamental) tiene TIME, FEEDBACK, TONE (filtra las repeticiones) y MIX. Para un delay estéreo tipo ping-pong, usa dos delays y envía uno a cada canal de <b>Audio</b>, con tiempos distintos.</p>\n<h3>Chorus, flanger y phaser</h3>\n<p>Los tres mezclan la señal con una copia retrasada cuyo tiempo modula un LFO. El tiempo de retraso define el efecto: 10–30 ms produce chorus (copias desafinadas), 1–10 ms con feedback produce flanger (filtro peine que barre), y filtros all-pass en cascada producen phaser. Se pueden construir con el Delay de Fundamental: TIME muy corto, un LFO lento en la entrada CV de TIME y MIX al 50 %.</p>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 10. Chorus con el Delay de Fundamental. Agrega feedback y reduce TIME para pasar a flanger.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 124\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip11\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"124.7244094488189\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-124)\" style=\"clip-path: url(#clip11)\"><g transform=\"\"><rect x=\"0.0\" y=\"59.527559055118104\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"29.597111066683073\" y=\"81.63779527559055\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,163) scale(1,-1)\">VCA</text><text x=\"33.168595441683074\" y=\"66.89763779527559\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,133) scale(1,-1)\">voz</text><rect x=\"119.05511811023624\" y=\"59.527559055118104\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"145.2474440206693\" y=\"81.63779527559055\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,163) scale(1,-1)\">Delay</text><text x=\"137.7301100362943\" y=\"66.89763779527559\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,133) scale(1,-1)\">TIME ~15 ms</text><rect x=\"0.0\" y=\"-2.8346456692913478\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"30.020157941683074\" y=\"19.275590551181097\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,38) scale(1,-1)\">LFO</text><text x=\"23.21234544168307\" y=\"4.535433070866134\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,9) scale(1,-1)\">TRI 0,5 Hz</text><rect x=\"238.11023622047247\" y=\"59.527559055118104\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"264.0984605684055\" y=\"81.63779527559055\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,163) scale(1,-1)\">Audio</text><polyline points=\"76.53543 77.95276, 97.79528 77.95276, 97.79528 77.95276, 114.5197 77.95276\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"119.0551 77.95276, 113.3858 80.7874, 113.3858 75.11811\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"76.53543 15.59055, 97.79528 15.59055, 97.79528 69.44882, 114.5197 69.44882\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"119.0551 69.44882, 113.3858 72.28346, 113.3858 66.61417\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"100.62992125984253\" y=\"45.354330708661415\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,90) scale(1,-1)\">TIME CV</text><polyline points=\"195.5906 77.95276, 216.8504 77.95276, 216.8504 77.95276, 233.5748 77.95276\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"238.1102 77.95276, 232.4409 80.7874, 232.4409 75.11811\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/></g></g></svg>\n</div><figcaption>Fig. 10. Chorus con el Delay de Fundamental. Agrega feedback y reduce TIME para pasar a flanger.</figcaption></figure>\n<h3>Reverb</h3>\n<p>La reverb simula las reflexiones de un espacio. Size o decay fija el tamaño; damping atenúa agudos en la cola; pre-delay separa el sonido directo de la cola. <b>Plateau</b> (Valley) es una reverb de placa de alta calidad y gratuita.</p>\n<h3>Gator: secuencia de volumen</h3>\n<p>El gator del hardware es una compuerta de ruido disparada por un patrón de hasta 32 pasos, cada uno con su volumen. Corta la nota sostenida en un ritmo. En VCV se construye con un secuenciador y un VCA:</p>\n<figure class=\"fig\"><div class=\"figscroll\"><svg class=\"fig-svg\" role=\"img\" aria-label=\"Fig. 11. Gator. SEQ 3 marca los pasos activos; una de sus filas de CV puede escalar el nivel de cada paso con un segundo VCA. El attack del ADSR equivale al edge slew.\" preserveAspectRatio=\"xMinYMin meet\" viewBox=\"0 0 453 113\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" fill-rule=\"evenodd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><clipPath id=\"clip12\"><rect x=\"0\" y=\"0\" width=\"453.5433070866142\" height=\"113.38582677165356\"/></clipPath><g id=\"group\" transform=\"scale(1,-1) translate(0,-113)\" style=\"clip-path: url(#clip12)\"><g transform=\"\"><rect x=\"0.0\" y=\"8.503937007874015\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"21.488712629183073\" y=\"30.61417322834646\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,61) scale(1,-1)\">Clocked</text><text x=\"31.487613996370573\" y=\"15.874015748031496\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,31) scale(1,-1)\">16th</text><rect x=\"113.38582677165356\" y=\"8.503937007874015\" width=\"76.53543307086615\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"139.12356283833662\" y=\"30.61417322834646\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,61) scale(1,-1)\">SEQ 3</text><text x=\"132.04785483052413\" y=\"15.874015748031496\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,31) scale(1,-1)\">gates + nivel</text><rect x=\"226.7716535433071\" y=\"8.503937007874015\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"253.28126460999022\" y=\"30.61417322834646\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,61) scale(1,-1)\">ADSR</text><text x=\"249.9018944928027\" y=\"15.874015748031496\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,31) scale(1,-1)\">A/R cortos</text><rect x=\"226.7716535433071\" y=\"76.53543307086615\" width=\"76.53543307086616\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"257.2760888287402\" y=\"98.64566929133859\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,197) scale(1,-1)\">Voz</text><text x=\"259.4865136334277\" y=\"83.90551181102363\" style=\"font-family: var(--f-ui); font-size: 5.9px;fill: var(--muted); stroke:none;\" transform=\"translate(0,167) scale(1,-1)\">pad</text><rect x=\"340.15748031496065\" y=\"76.53543307086615\" width=\"76.53543307086613\" height=\"36.85039370078741\" rx=\"2\" ry=\"2\" style=\"stroke: var(--ink); stroke-linecap: butt; stroke-width: 0.8; fill: var(--surface); fill-rule: evenodd;\"/><text x=\"369.7545913816437\" y=\"98.64566929133859\" style=\"font-family: var(--f-ui); font-weight: 700; font-size: 7.6px;fill: var(--ink); stroke:none;\" transform=\"translate(0,197) scale(1,-1)\">VCA</text><polyline points=\"76.53543 26.92913, 94.96063 26.92913, 94.96063 26.92913, 108.8504 26.92913\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"113.3858 26.92913, 107.7165 29.76378, 107.7165 24.09449\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 0.1; fill: var(--gate); fill-rule: evenodd;\"/><text x=\"83.55794014517717\" y=\"30.61417322834646\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--gate); stroke:none;\" transform=\"translate(0,61) scale(1,-1)\">CLK</text><polyline points=\"189.9213 26.92913, 208.3465 26.92913, 208.3465 26.92913, 222.2362 26.92913\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"226.7717 26.92913, 221.1024 29.76378, 221.1024 24.09449\" style=\"stroke: var(--gate); stroke-linecap: butt; stroke-width: 0.1; fill: var(--gate); fill-rule: evenodd;\"/><text x=\"194.57218488558075\" y=\"30.61417322834646\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--gate); stroke:none;\" transform=\"translate(0,61) scale(1,-1)\">GATE</text><polyline points=\"303.3071 94.96063, 321.7323 94.96063, 321.7323 94.96063, 335.622 94.96063\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd;\"/><polygon points=\"340.1575 94.96063, 334.4882 97.79528, 334.4882 92.12598\" style=\"stroke: var(--audio); stroke-linecap: butt; stroke-width: 0.1; fill: var(--audio); fill-rule: evenodd;\"/><polyline points=\"303.3071 26.92913, 321.7323 26.92913, 321.7323 86.45669, 335.622 86.45669\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 1.1; fill: None; fill-rule: evenodd; stroke-dasharray: 2, 1.6;\"/><polygon points=\"340.1575 86.45669, 334.4882 89.29134, 334.4882 83.62205\" style=\"stroke: var(--cv); stroke-linecap: butt; stroke-width: 0.1; fill: var(--cv); fill-rule: evenodd;\"/><text x=\"324.5669291338583\" y=\"59.52755905511812\" style=\"font-family: var(--f-ui); font-size: 6px;fill: var(--cv); stroke:none;\" transform=\"translate(0,119) scale(1,-1)\">CV</text></g></g></svg>\n</div><figcaption>Fig. 11. Gator. SEQ 3 marca los pasos activos; una de sus filas de CV puede escalar el nivel de cada paso con un segundo VCA. El attack del ADSR equivale al edge slew.</figcaption></figure>\n<h3>Paneo</h3>\n<p>El paneo reparte la señal entre izquierda y derecha. Un auto-pan modula esa posición con un LFO. En VCV: dos VCA, uno por canal; el LFO unipolar controla uno y su versión invertida (8vert en negativo más offset, o el switch de inversión del LFO en una segunda instancia sincronizada) controla el otro. La suma de ganancias lineales constante produce una caída de volumen en el centro; si te molesta, usa un módulo de paneo dedicado con ley de igual potencia.</p>\n<div class=\"tablewrap\"><table><thead><tr><th>Efecto del hardware</th><th>Módulo sugerido en VCV</th></tr></thead><tbody><tr><td>EQ</td><td>VCF en HPF para limpiar graves; EQ paramétricos de la Library</td></tr><tr><td>Compressor</td><td>Busca “compressor” en la Library</td></tr><tr><td>Distortion</td><td>DRIVE del VCF; waveshapers y bitcrushers de la Library</td></tr><tr><td>Delay</td><td>Delay (Fundamental)</td></tr><tr><td>Reverb</td><td>Plateau (Valley)</td></tr><tr><td>Chorus / Phaser</td><td>Delay + LFO (Fig. 10); módulos dedicados en la Library</td></tr><tr><td>Gator</td><td>Clocked + SEQ 3 + ADSR + VCA (Fig. 11)</td></tr><tr><td>Pan / Auto-pan</td><td>Dos VCA + LFO; o módulo de paneo</td></tr></tbody></table></div>"}, {"n": 10, "kick": "PRÁCTICA", "title": "Patches de estudio", "html": "<p>Cinco patches que combinan los capítulos anteriores. Cada uno aísla una idea. Arma el patch, escucha, y luego cambia un solo parámetro a la vez.</p>\n<h3>1 · Bajo pluck</h3>\n<ul><li>VCO: SAW + SQR una octava abajo (Octave −1) mezclados.</li><li>VCF: LPF, FREQ baja, RES 30 %, DRIVE 20 %.</li><li>ADSR filtro: A 0, D 150 ms, S 0, R 100 ms; FREQ CV +60 %.</li><li>ADSR amplitud: A 0, D 400 ms, S 40 %, R 80 ms.</li><li>Variación: VEL → FREQ CV del VCF. Las notas fuertes suenan más brillantes.</li></ul>\n<h3>2 · Pad de cuerdas</h3>\n<ul><li>Tres VCO en SAW con unison (Fig. 3) y drift con Random lento.</li><li>VCF: LPF medio, RES baja; key tracking 50 %.</li><li>ADSR amplitud: A 800 ms, D 1 s, S 80 %, R 2 s.</li><li>LFO TRI 0,2 Hz → FREQ CV del VCF, profundidad pequeña.</li><li>Chorus (Fig. 10) y Plateau al final.</li></ul>\n<h3>3 · Lead sincronizado</h3>\n<ul><li>VCO 1 SQR → SYNC del VCO 2; se escucha solo el VCO 2 (SAW).</li><li>ADSR 3: A 0, D 600 ms, S 0 → FM (pitch) del VCO 2: el barrido de sync.</li><li>Vibrato con fade in (Fig. 7), profundidad en MW.</li><li>Delay en corcheas con feedback 35 %.</li></ul>\n<h3>4 · Campana con ring mod</h3>\n<ul><li>VCO 1 SIN y VCO 3 SIN a +7 semitonos y 13 cents → A*B+C.</li><li>Mezcla 70 % ring mod, 30 % VCO 1.</li><li>ADSR amplitud: A 0, D 2 s, S 0, R 2 s. Decay tracking negativo: los agudos decaen antes.</li><li>Plateau con decay largo.</li></ul>\n<h3>5 · Percusión desde ruido</h3>\n<ul><li>Hi-hat: Noise blanco → VCF en HPF alto → VCA con ADSR A 0, D 40 ms, S 0.</li><li>Snare: Noise rosa → VCF pasa banda + VCO TRI con pitch drop (ADSR → FM); ambos con decay de 150 ms.</li><li>Kick: VCF en auto-oscilación (RES máx.) sin entrada, ADSR rápido → FREQ CV para el pitch drop, otro ADSR → VCA.</li><li>Dispara los tres con SEQ 3 y Clocked: nota fija, sin V/Oct.</li></ul>\n<h3>Diagnóstico rápido</h3>\n<div class=\"tablewrap\"><table><thead><tr><th>Síntoma</th><th>Causa probable</th></tr></thead><tbody><tr><td>Silencio</td><td>Falta el gate al ADSR, VCA sin CV, Audio sin dispositivo, cutoff en el mínimo</td></tr><tr><td>Nota que no termina</td><td>Sustain al máximo y release largo; o el gate quedó pegado</td></tr><tr><td>Distorsión no deseada</td><td>Mixer con todas las entradas al máximo; drive o resonancia altas</td></tr><tr><td>Desafinado entre octavas</td><td>V/Oct pasando por un atenuador que no está al 100 %</td></tr><tr><td>Polifonía que suena mono</td><td>MIDI-CV en 1 canal; o un módulo intermedio monofónico</td></tr><tr><td>Solo suena una voz</td><td>Falta Sum antes de Audio (Audio toma el primer canal)</td></tr><tr><td>Click al inicio de nota</td><td>Attack 0 sobre fase libre; sube el attack a 2–5 ms</td></tr></tbody></table></div>"}, {"n": 11, "kick": "REFERENCIA", "title": "Apéndice: índice de módulos", "html": "<div class=\"tablewrap\"><table><thead><tr><th>Función</th><th>Módulo</th><th>Plugin</th></tr></thead><tbody><tr><td>Entrada MIDI / teclado</td><td>MIDI-CV, MIDI-CC, MIDI-Map</td><td>Core</td></tr><tr><td>Salida de audio</td><td>Audio</td><td>Core</td></tr><tr><td>Oscilador analógico</td><td>VCO</td><td>Fundamental</td></tr><tr><td>Oscilador wavetable</td><td>WT VCO</td><td>Fundamental</td></tr><tr><td>Ruido</td><td>Noise</td><td>Fundamental</td></tr><tr><td>Filtro LP/HP 4 polos</td><td>VCF</td><td>Fundamental</td></tr><tr><td>Filtro multimodo</td><td>VCF</td><td>Bogaudio</td></tr><tr><td>Envolvente</td><td>ADSR</td><td>Fundamental</td></tr><tr><td>Envolvente con delay/hold</td><td>DADSRH</td><td>Bogaudio</td></tr><tr><td>Función cíclica / AR</td><td>Rampage</td><td>Befaco</td></tr><tr><td>LFO</td><td>LFO</td><td>Fundamental</td></tr><tr><td>Aleatorio / S&amp;H</td><td>Random</td><td>Fundamental</td></tr><tr><td>Amplificador</td><td>VCA</td><td>Fundamental</td></tr><tr><td>Multiplicador / ring mod</td><td>A*B+C</td><td>Befaco</td></tr><tr><td>Mezcla</td><td>Mixer, VCV Mixer, Sum</td><td>Fundamental</td></tr><tr><td>Atenuverter</td><td>8vert</td><td>Fundamental</td></tr><tr><td>Polifonía</td><td>Split, Merge</td><td>Fundamental</td></tr><tr><td>Desplazamiento de octava</td><td>Octave</td><td>Fundamental</td></tr><tr><td>Cuantizador</td><td>Quantizer</td><td>Fundamental</td></tr><tr><td>Secuenciador</td><td>SEQ 3</td><td>Fundamental</td></tr><tr><td>Conmutador</td><td>Sequential Switch</td><td>Fundamental</td></tr><tr><td>Reloj maestro</td><td>Clocked</td><td>Impromptu</td></tr><tr><td>Delay</td><td>Delay</td><td>Fundamental</td></tr><tr><td>Reverb</td><td>Plateau</td><td>Valley</td></tr><tr><td>Silenciar canales</td><td>Mutes</td><td>Fundamental</td></tr><tr><td>Osciloscopio</td><td>Scope</td><td>Fundamental</td></tr></tbody></table></div>\n<p class=\"small\">Los nombres y controles de módulos de terceros cambian entre versiones. Si un control no coincide con lo descrito, el principio del capítulo sigue vigente: busca en la Library un módulo que cumpla esa función.</p>"}];
+</script>
+<script>
+'use strict';
+/* ================= utilidades ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const NN = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const mtof = n => 440 * Math.pow(2, (n - 69) / 12);
+const noteName = n => NN[((n % 12) + 12) % 12] + (Math.floor(n / 12) - 1);
+const num = (x, d = 2) => x.toLocaleString('es-CL', { minimumFractionDigits: d, maximumFractionDigits: d });
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const pct = v => Math.round(v * 100) + ' %';
+const hz = v => v >= 1000 ? num(v / 1000, v >= 10000 ? 1 : 2) + ' kHz' : Math.round(v) + ' Hz';
+const secs = v => v < 1 ? Math.round(v * 1000) + ' ms' : num(v, 2) + ' s';
+const sgn = (v, d, u) => (v > 0 ? '+' : v < 0 ? '−' : '') + num(Math.abs(v), d) + u;
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch { } } };
+
+/* ================= catálogo de controles ================= */
+const WAVES = [['sine', 'Seno'], ['triangle', 'Triángulo'], ['sawtooth', 'Sierra'], ['square', 'Cuadrada']];
+const MSRC = [['none', '—'], ['lfo1', 'LFO 1'], ['lfo2', 'LFO 2'], ['env', 'ENV 2 (filtro)'], ['mw', 'Mod wheel'], ['vel', 'Velocity'], ['kbd', 'Teclado (V/Oct)']];
+const MSRC2 = [['none', '— (× 1)'], ...MSRC.slice(1)];
+const MDST = [['none', '—'], ['pitch', 'Pitch'], ['osc2', 'Pitch VCO 2'], ['cutoff', 'Cutoff'], ['amp', 'Volumen'], ['pw', 'Ancho de pulso'], ['noise', 'Nivel de ruido']];
+const T = (l, sec, min, max, d) => ({ l, sec, min, max, log: true, f: secs, def: d });
+const C = {
+  wave1: { l: 'Onda', sec: 'VCO 1', t: 'sel', o: [...WAVES, ['pulse', 'Pulso (PW)']], st: 1 },
+  pw: { l: 'Ancho de pulso', sec: 'VCO 1', min: .05, max: .95, step: .01, f: pct },
+  unison: { l: 'Voces unison', sec: 'VCO 1', min: 1, max: 7, step: 1, f: v => v + (v == 1 ? ' voz' : ' voces'), st: 1 },
+  detune: { l: 'Detune', sec: 'VCO 1', min: 0, max: 50, step: 1, f: v => '±' + v + ' ct' },
+  drift: { l: 'Drift', sec: 'VCO 1', min: 0, max: 25, step: 1, f: v => v + ' ct', st: 1 },
+  wave2: { l: 'Onda', sec: 'VCO 2', t: 'sel', o: WAVES },
+  osc2Semi: { l: 'Semitonos', sec: 'VCO 2', min: -24, max: 24, step: 1, f: v => sgn(v, 0, ' st') },
+  osc2Cents: { l: 'Cents', sec: 'VCO 2', min: -50, max: 50, step: 1, f: v => sgn(v, 0, ' ct') },
+  osc1Level: { l: 'VCO 1', sec: 'Mixer', min: 0, max: 1, step: .01, f: pct },
+  osc2Level: { l: 'VCO 2', sec: 'Mixer', min: 0, max: 1, step: .01, f: pct },
+  ringLevel: { l: 'Ring mod 1×2', sec: 'Mixer', min: 0, max: 1, step: .01, f: pct },
+  noiseLevel: { l: 'Ruido', sec: 'Mixer', min: 0, max: 1, step: .01, f: pct },
+  noiseColor: { l: 'Color del ruido', sec: 'Mixer', t: 'sel', o: [['white', 'Blanco'], ['pink', 'Rosa'], ['brown', 'Rojo']], st: 1 },
+  fType: { l: 'Tipo', sec: 'VCF 1', t: 'sel', o: [['lowpass', 'Pasa bajos'], ['highpass', 'Pasa altos'], ['bandpass', 'Pasa banda'], ['notch', 'Rechaza banda'], ['off', 'Bypass']], st: 1 },
+  slope: { l: 'Pendiente', sec: 'VCF 1', t: 'sel', o: [['12', '12 dB/oct'], ['24', '24 dB/oct']], st: 1 },
+  cutoff: { l: 'Cutoff', sec: 'VCF 1', min: 20, max: 18000, log: true, f: hz },
+  res: { l: 'Resonancia', sec: 'VCF 1', min: 0, max: 1, step: .01, f: pct },
+  drive: { l: 'Drive', sec: 'VCF 1', min: 0, max: 1, step: .01, f: pct },
+  keytrack: { l: 'Key tracking', sec: 'VCF 1', min: 0, max: 1, step: .01, f: pct },
+  fEnvAmt: { l: 'ENV 2 → cutoff', sec: 'VCF 1', min: -4, max: 4, step: .05, f: v => sgn(v, 1, ' oct') },
+  routing: { l: 'Routing', sec: 'VCF 2', t: 'sel', o: [['single', 'Single (solo VCF 1)'], ['serie', 'Serie 1 → 2'], ['paralelo', 'Paralelo 1 + 2']], st: 1 },
+  f2Type: { l: 'Tipo VCF 2', sec: 'VCF 2', t: 'sel', o: [['lowpass', 'Pasa bajos'], ['highpass', 'Pasa altos'], ['bandpass', 'Pasa banda'], ['notch', 'Rechaza banda']], st: 1 },
+  f2Cutoff: { l: 'Cutoff VCF 2', sec: 'VCF 2', min: 20, max: 18000, log: true, f: hz },
+  balance: { l: 'Balance 1 ↔ 2', sec: 'VCF 2', min: 0, max: 1, step: .01, f: v => Math.round((1 - v) * 100) + ' / ' + Math.round(v * 100) },
+  aA: T('Attack', 'ENV 1 · amplitud', .001, 6), aD: T('Decay', 'ENV 1 · amplitud', .005, 6),
+  aS: { l: 'Sustain', sec: 'ENV 1 · amplitud', min: 0, max: 1, step: .01, f: pct }, aR: T('Release', 'ENV 1 · amplitud', .005, 8),
+  fA: T('Attack', 'ENV 2 · filtro', .001, 6), fD: T('Decay', 'ENV 2 · filtro', .005, 6),
+  fS: { l: 'Sustain', sec: 'ENV 2 · filtro', min: 0, max: 1, step: .01, f: pct }, fR: T('Release', 'ENV 2 · filtro', .005, 8),
+  velAmt: { l: 'Velocity → volumen', sec: 'Voz', min: 0, max: 1, step: .01, f: pct },
+  voiceMode: { l: 'Modo de voz', sec: 'Voz', t: 'sel', o: [['poly', 'Polifónico'], ['mono', 'Mono (retrigger)'], ['legato', 'Mono legato']], st: 1 },
+  glide: { l: 'Glide (mono)', sec: 'Voz', min: 0, max: 1, step: .01, f: secs },
+  envRepeat: { l: 'Repetir envolventes (loop A→D)', sec: 'Voz', t: 'tog', st: 1 },
+  lfoWave: { l: 'Onda', sec: 'LFO 1', t: 'sel', o: [...WAVES, ['random', 'S&H aleatorio']], st: 1 },
+  lfoRate: { l: 'Frecuencia', sec: 'LFO 1', min: .05, max: 20, log: true, f: v => num(v, v < 1 ? 2 : 1) + ' Hz' },
+  lfoDepth: { l: 'Profundidad', sec: 'LFO 1', min: 0, max: 1, step: .01, f: pct },
+  lfoDest: { l: 'Destino', sec: 'LFO 1', t: 'sel', o: [['pitch', 'Pitch (vibrato)'], ['cutoff', 'Cutoff (wah)'], ['amp', 'Volumen (trémolo)'], ['pw', 'Ancho de pulso (PWM)'], ['none', 'Ninguno']], st: 1 },
+  lfoFadeMode: { l: 'Fade', sec: 'LFO 1', t: 'sel', o: [['off', 'Sin fade'], ['fadein', 'Fade in'], ['fadeout', 'Fade out'], ['gatein', 'Gate in (retardo)']], st: 1 },
+  lfoFade: { l: 'Tiempo de fade', sec: 'LFO 1', min: .01, max: 4, log: true, f: secs, st: 1 },
+  lfoSync: { l: 'Key sync (fase desde cero en cada nota)', sec: 'LFO 1', t: 'tog', st: 1 },
+  lfo2Rate: { l: 'Frecuencia LFO 2 (seno)', sec: 'LFO 2', min: .05, max: 20, log: true, f: v => num(v, v < 1 ? 2 : 1) + ' Hz' },
+  arpOn: { l: 'Arpegiador activo', sec: 'Arpegiador', t: 'tog' },
+  arpMode: { l: 'Modo', sec: 'Arpegiador', t: 'sel', o: [['up', 'Up'], ['down', 'Down'], ['updown', 'Up / Down'], ['random', 'Aleatorio'], ['played', 'Orden tocado']] },
+  bpm: { l: 'Tempo', sec: 'Arpegiador', min: 40, max: 240, step: 1, f: v => v + ' BPM' },
+  arpRate: { l: 'Figura', sec: 'Arpegiador', t: 'sel', o: [['4', 'Negras'], ['8', 'Corcheas'], ['16', 'Semicorcheas']] },
+  arpOct: { l: 'Octavas', sec: 'Arpegiador', min: 1, max: 3, step: 1, f: v => v },
+  arpGate: { l: 'Largo de nota', sec: 'Arpegiador', min: .05, max: 1, step: .01, f: pct },
+  latch: { l: 'Latch (mantener acorde al soltar)', sec: 'Arpegiador', t: 'tog' },
+  chord: { l: 'Acorde por tecla', sec: 'Chorder', t: 'sel', o: [['none', 'Apagado'], ['maj', 'Mayor 0·4·7'], ['min', 'Menor 0·3·7'], ['dom7', 'Séptima 0·4·7·10'], ['min7', 'Menor 7 0·3·7·10'], ['sus4', 'Sus4 0·5·7'], ['fifth', 'Quinta 0·7·12']] },
+  distType: { l: 'Tipo', sec: 'Distorsión', t: 'sel', o: [['off', 'Apagada'], ['soft', 'Suave (válvula)'], ['hard', 'Clipper'], ['rect', 'Rectificador'], ['bits', 'Bitcrusher']] },
+  distAmt: { l: 'Cantidad', sec: 'Distorsión', min: 0, max: 1, step: .01, f: pct },
+  compOn: { l: 'Compresor (−24 dB, 4:1)', sec: 'Dinámica', t: 'tog' },
+  chorusMix: { l: 'Mezcla', sec: 'Chorus', min: 0, max: 1, step: .01, f: pct },
+  chorusRate: { l: 'Velocidad', sec: 'Chorus', min: .05, max: 5, log: true, f: v => num(v, 2) + ' Hz' },
+  chorusDepth: { l: 'Profundidad', sec: 'Chorus', min: 0, max: 10, step: .1, f: v => num(v, 1) + ' ms' },
+  delayTime: { l: 'Tiempo', sec: 'Delay', min: .01, max: 1.5, log: true, f: secs },
+  delayFb: { l: 'Feedback', sec: 'Delay', min: 0, max: .95, step: .01, f: pct },
+  delayTone: { l: 'Tono', sec: 'Delay', min: 300, max: 16000, log: true, f: hz },
+  delayMix: { l: 'Mezcla', sec: 'Delay', min: 0, max: 1, step: .01, f: pct },
+  reverbSize: { l: 'Tamaño', sec: 'Reverb', min: .3, max: 8, log: true, f: v => num(v, 1) + ' s' },
+  reverbMix: { l: 'Mezcla', sec: 'Reverb', min: 0, max: 1, step: .01, f: pct },
+  gatorOn: { l: 'Gator activo', sec: 'Gator', t: 'tog' },
+  gatorSlew: { l: 'Edge slew', sec: 'Gator', min: .001, max: .1, log: true, f: secs },
+  panRate: { l: 'Velocidad', sec: 'Auto-pan', min: .05, max: 8, log: true, f: v => num(v, 2) + ' Hz' },
+  panDepth: { l: 'Profundidad', sec: 'Auto-pan', min: 0, max: 1, step: .01, f: pct },
+};
+for (let i = 1; i <= 3; i++) {
+  C['m' + i + 's1'] = { l: 'Fuente 1', sec: 'Slot ' + i, t: 'sel', o: MSRC, st: 1 };
+  C['m' + i + 's2'] = { l: '× Fuente 2', sec: 'Slot ' + i, t: 'sel', o: MSRC2, st: 1 };
+  C['m' + i + 'dst'] = { l: 'Destino', sec: 'Slot ' + i, t: 'sel', o: MDST, st: 1 };
+  C['m' + i + 'amt'] = { l: 'Profundidad', sec: 'Slot ' + i, min: -1, max: 1, step: .01, f: v => sgn(v * 100, 0, ' %') };
+}
+const JACK = { 'VCO 1': 'var(--audio)', 'VCO 2': 'var(--audio)', 'Mixer': 'var(--audio)', 'VCF 1': 'var(--audio)', 'VCF 2': 'var(--audio)', 'ENV 1 · amplitud': 'var(--cv)', 'ENV 2 · filtro': 'var(--cv)', 'LFO 1': 'var(--cv)', 'LFO 2': 'var(--cv)', 'Voz': 'var(--gate)', 'Arpegiador': 'var(--gate)', 'Chorder': 'var(--poly)', 'Gator': 'var(--gate)' };
+
+const DEFAULTS = {
+  wave1: 'sawtooth', pw: .5, unison: 1, detune: 12, drift: 0, wave2: 'sawtooth', osc2Semi: 0, osc2Cents: 0,
+  osc1Level: .8, osc2Level: 0, ringLevel: 0, noiseLevel: 0, noiseColor: 'white',
+  fType: 'lowpass', slope: '24', cutoff: 2400, res: .15, drive: 0, keytrack: .5, fEnvAmt: 0,
+  routing: 'single', f2Type: 'highpass', f2Cutoff: 300, balance: .5,
+  aA: .005, aD: .3, aS: .7, aR: .3, fA: .005, fD: .4, fS: .3, fR: .4,
+  velAmt: .5, voiceMode: 'poly', glide: .08, envRepeat: false,
+  lfoWave: 'sine', lfoRate: 5, lfoDepth: 0, lfoDest: 'pitch', lfoFadeMode: 'off', lfoFade: 1, lfoSync: false, lfo2Rate: .3,
+  m1s1: 'none', m1s2: 'none', m1dst: 'none', m1amt: .2, m2s1: 'none', m2s2: 'none', m2dst: 'none', m2amt: .2, m3s1: 'none', m3s2: 'none', m3dst: 'none', m3amt: .2,
+  modwheel: 0, arpOn: false, arpMode: 'up', bpm: 120, arpRate: '16', arpOct: 1, arpGate: .5, latch: false, chord: 'none',
+  distType: 'off', distAmt: .35, compOn: false, chorusMix: 0, chorusRate: .4, chorusDepth: 4,
+  delayTime: .375, delayFb: .35, delayTone: 4000, delayMix: 0, reverbSize: 2.5, reverbMix: 0,
+  gatorOn: false, gatorSlew: .004, panRate: .25, panDepth: 0, master: .8,
+};
+
+/* ================= laboratorios por capítulo ================= */
+const LABS = {
+  0: { name: 'Voltímetro', preset: { wave1: 'sine', fType: 'off', aS: 1, aR: .15 }, controls: ['wave1'], show: ['scope', 'spectrum'],
+    tries: ['Toca C4 (tecla A del teclado del computador): la lectura marca 0,000 V y 261,63 Hz.', 'Sube una octava con X y toca la misma tecla: el voltaje aumenta exactamente 1 V y la frecuencia se duplica.', 'Recorre las teclas de a una: cada semitono suma 0,083 V.'] },
+  1: { name: 'Voz sustractiva', preset: {}, controls: ['wave1', 'cutoff', 'res', 'aA', 'aD', 'aS', 'aR', 'voiceMode'], show: ['scope', 'spectrum'],
+    tries: ['Abre el cutoff al máximo y baja la resonancia: escuchas la diente de sierra cruda.', 'Baja el cutoff mientras mantienes una nota: el espectro pierde la parte alta y el osciloscopio redondea la onda.', 'Toca un acorde: la voz es polifónica, como MIDI-CV con varios canales.'] },
+  2: { name: 'Osciladores', preset: { cutoff: 16000, res: 0, keytrack: 0, aS: .9 }, controls: ['wave1', 'pw', 'unison', 'detune', 'drift', 'lfoRate', 'lfoDepth', 'osc1Level', 'noiseLevel', 'noiseColor'],
+    show: ['scope', 'spectrum'], extraPreset: { lfoDest: 'pw' }, secRename: { 'LFO 1': 'PWM (LFO 1 → ancho de pulso)' },
+    tries: ['Compara las cuatro ondas en el espectro: la sierra tiene todos los armónicos; la cuadrada, solo los impares.', 'Elige Pulso, baja el ancho a 10 % y luego sube la profundidad de PWM: el pulso respira.', 'Pon 5 voces unison y sube el detune de a poco hasta escuchar el batido.', 'Pasa el ruido de blanco a rosa y rojo: la pendiente del espectro cambia.'] },
+  3: { name: 'Mixer y ring mod', preset: { wave1: 'sine', wave2: 'sine', osc1Level: 0, osc2Level: 0, ringLevel: .8, osc2Semi: 7, cutoff: 16000, res: 0, keytrack: 0, aS: .9 },
+    controls: ['wave1', 'wave2', 'osc2Semi', 'osc2Cents', 'osc1Level', 'osc2Level', 'ringLevel', 'noiseLevel', 'noiseColor'], show: ['scope', 'spectrum'],
+    tries: ['Con VCO 2 a +7 semitonos, el ring mod suena consonante. Prueba +5, +12 y luego +6 o +1.', 'Mueve los cents de VCO 2: aparece batido.', 'Sube VCO 1 y VCO 2 al máximo junto con el ring mod: el mixer satura. Bájalos a la mitad.'] },
+  4: { name: 'Filtros', preset: { cutoff: 600, res: .55, fEnvAmt: 2.5, fA: .005, fD: .35, fS: .2, keytrack: .5 },
+    controls: ['fType', 'slope', 'cutoff', 'res', 'drive', 'keytrack', 'fEnvAmt', 'fA', 'fD', 'fS', 'fR', 'routing', 'f2Type', 'f2Cutoff', 'balance'], show: ['scope', 'filter'],
+    tries: ['Sube la resonancia sobre 90 %: el filtro silba cerca del cutoff.', 'Con key tracking en 0, toca graves y agudos: los agudos suenan opacos. Con 100 % el timbre se iguala.', 'Pon ENV 2 → cutoff en negativo: el filtro se cierra al tocar.', 'Routing Serie con VCF 1 pasa bajos y VCF 2 pasa altos: obtienes un pasa banda variable.'] },
+  5: { name: 'Envolventes', preset: { cutoff: 900, fEnvAmt: 2, res: .3 }, controls: ['aA', 'aD', 'aS', 'aR', 'fA', 'fD', 'fS', 'fR', 'fEnvAmt', 'velAmt', 'voiceMode', 'glide', 'envRepeat'], show: ['scope', 'adsr'],
+    tries: ['Órgano: attack 0, sustain al máximo, release corto.', 'Pluck: sustain 0, decay de 200 ms. El sonido decae aunque mantengas la tecla.', 'Haz clic más abajo en una tecla del teclado en pantalla: velocity más alta, nota más fuerte.', 'Modo mono legato con glide: toca notas ligadas sin soltar la anterior.'] },
+  6: { name: 'LFOs', preset: { lfoDepth: .25, lfoRate: 5.5, lfoDest: 'pitch', lfoFadeMode: 'fadein', lfoFade: 1.2, cutoff: 3000, aS: 1, aR: .5 },
+    controls: ['lfoWave', 'lfoRate', 'lfoDepth', 'lfoDest', 'lfoFadeMode', 'lfoFade', 'lfoSync'], show: ['scope', 'spectrum'],
+    tries: ['Mantén una nota: el vibrato entra de a poco (fade in).', 'Cambia el destino a Cutoff y la onda a S&H aleatorio: notas de filtro al azar.', 'Destino Volumen con 6 Hz: trémolo.', 'Activa key sync con una onda cuadrada lenta y toca notas cortas: todas empiezan igual.'] },
+  7: { name: 'Matriz de modulación', preset: { m1s1: 'lfo1', m1s2: 'mw', m1dst: 'pitch', m1amt: .08, lfoRate: 5.5, lfoDepth: 0, m2s1: 'vel', m2dst: 'cutoff', m2amt: .45, cutoff: 900, res: .3 },
+    controls: ['m1s1', 'm1s2', 'm1dst', 'm1amt', 'm2s1', 'm2s2', 'm2dst', 'm2amt', 'm3s1', 'm3s2', 'm3dst', 'm3amt', 'lfoRate', 'lfo2Rate'], show: ['scope', 'spectrum'],
+    secRename: { 'LFO 1': 'Fuentes LFO' }, relabel: { lfoRate: 'Frecuencia LFO 1' },
+    tries: ['Slot 1 multiplica LFO 1 × mod wheel: con la rueda abajo no hay vibrato. Súbela.', 'Cambia la Fuente 2 del slot 1 a “—”: el vibrato queda fijo, sin rueda.', 'Slot 2 usa velocity → cutoff: toca fuerte y suave.', 'En el slot 3 prueba Teclado → Cutoff: es key tracking hecho a mano.'] },
+  8: { name: 'Arpegiador y acordes', preset: { arpOn: true, aA: .002, aD: .18, aS: 0, aR: .12, fEnvAmt: 2, fD: .15, fS: 0, cutoff: 700, res: .35, delayMix: .2 },
+    controls: ['arpOn', 'arpMode', 'bpm', 'arpRate', 'arpOct', 'arpGate', 'latch', 'chord'], show: ['scope', 'spectrum'],
+    tries: ['Mantén tres teclas: el arp las recorre en orden ascendente.', 'Activa Latch, toca un acorde y suelta: el arp sigue sonando.', 'Elige Acorde por tecla: Menor y toca una sola tecla: el arp recorre el acorde completo (el chorder va antes del arp).'] },
+  9: { name: 'Efectos', preset: { aS: .8, aR: .8, cutoff: 2400, unison: 3, delayMix: .25, reverbMix: .2 },
+    controls: ['distType', 'distAmt', 'compOn', 'chorusMix', 'chorusRate', 'chorusDepth', 'delayTime', 'delayFb', 'delayTone', 'delayMix', 'reverbSize', 'reverbMix', 'gatorOn', 'gatorSlew', 'panRate', 'panDepth'], show: ['scope', 'spectrum'], gator: true,
+    tries: ['Compara los tipos de distorsión con la misma cantidad: cambian el volumen y los armónicos.', 'Feedback del delay sobre 90 %: las repeticiones casi no decaen.', 'Activa el gator y mantén un acorde: el patrón corta el sonido en semicorcheas. Edita los pasos.', 'Sube el edge slew del gator: los cortes se suavizan.'] },
+  10: { name: 'Patches de estudio', preset: {}, controls: ['cutoff', 'res', 'fEnvAmt', 'aA', 'aD', 'aS', 'aR', 'delayMix', 'reverbMix'], show: ['scope', 'spectrum'],
+    presets: [
+      ['Bajo pluck', { wave1: 'sawtooth', wave2: 'square', osc2Semi: -12, osc2Level: .6, cutoff: 220, res: .3, drive: .2, fEnvAmt: 3, fA: .001, fD: .15, fS: 0, fR: .1, aA: .001, aD: .4, aS: .4, aR: .08, velAmt: .6, voiceMode: 'mono', keytrack: .4 }],
+      ['Pad de cuerdas', { unison: 3, detune: 14, drift: 6, cutoff: 1400, res: .1, aA: .8, aD: 1, aS: .8, aR: 2, lfoDest: 'cutoff', lfoRate: .2, lfoDepth: .15, chorusMix: .4, reverbMix: .35, reverbSize: 4 }],
+      ['Lead con vibrato', { wave1: 'pulse', pw: .3, wave2: 'sawtooth', osc2Semi: 12, osc2Level: .4, cutoff: 2600, res: .25, fEnvAmt: 1.5, fD: .5, lfoDest: 'pitch', lfoRate: 5.5, lfoDepth: .22, lfoFadeMode: 'fadein', lfoFade: 1, voiceMode: 'legato', glide: .08, aS: .9, delayMix: .3, delayFb: .35 }],
+      ['Campana ring mod', { wave1: 'sine', wave2: 'sine', osc2Semi: 7, osc2Cents: 13, osc1Level: .3, osc2Level: 0, ringLevel: .7, cutoff: 14000, res: 0, keytrack: 0, aA: .001, aD: 2, aS: 0, aR: 2, reverbMix: .35, reverbSize: 4 }],
+      ['Hi-hat', { osc1Level: 0, noiseLevel: 1, noiseColor: 'white', fType: 'highpass', cutoff: 7000, res: .2, keytrack: 0, aA: .001, aD: .05, aS: 0, aR: .05 }],
+      ['Snare', { wave1: 'triangle', osc1Level: .5, noiseLevel: .8, noiseColor: 'pink', fType: 'bandpass', cutoff: 1800, res: .2, keytrack: 0, aA: .001, aD: .15, aS: 0, aR: .1, fA: .001, fD: .06, fS: 0, m1s1: 'env', m1dst: 'pitch', m1amt: .25 }],
+    ],
+    tries: ['Carga un patch y cambia un solo parámetro a la vez.', 'En Bajo pluck, sube el decay de ENV 1: deja de ser percusivo.', 'En Hi-hat, cambia el ruido a rosa desde el capítulo 2: el carácter cambia por completo.'] },
+};
+
+/* ================= motor de audio ================= */
+const E = { ctx: null, voices: new Map(), mono: null, monoStack: [], arpHeld: [], phys: new Set(), arpIdx: 0, step: 0, nextStep: 0, nextSH: 0,
+  gatorSteps: [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0], stepQueue: [], curStep: -1, lastVel: .8, rvSizeBuilt: 0, oct: 0 };
+let P = { ...DEFAULTS };
+
+const PULSE_CURVE = (() => { const n = 1024, c = new Float32Array(n); for (let i = 0; i < n; i++) { const x = i / (n - 1) * 2 - 1; c[i] = Math.max(-1, Math.min(1, x * 400)); } return c; })();
+function curveFor(type, amt) {
+  if (type === 'off') return null;
+  const n = 4096, c = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = i / (n - 1) * 2 - 1; let y = x;
+    if (type === 'soft') { const k = 1 + amt * 25; y = Math.tanh(k * x) / Math.tanh(k); }
+    else if (type === 'hard') { const g = 1 + amt * 20; y = clamp(x * g, -1, 1) * (0.55 + 0.45 / g); }
+    else if (type === 'rect') { y = (1 - amt) * x + amt * (Math.abs(x) * 2 - 0.6); }
+    else if (type === 'bits') { const bits = 12 - amt * 10.5, q = Math.pow(2, bits) / 2; y = Math.round(x * q) / q; }
+    c[i] = y;
+  }
+  return c;
+}
+function driveCurve(d) { const n = 2048, c = new Float32Array(n), k = 1 + d * 14; for (let i = 0; i < n; i++) { const x = i / (n - 1) * 2 - 1; c[i] = Math.tanh(k * x) / Math.tanh(k); } return c; }
+function makeNoise(c) {
+  const len = c.sampleRate * 2, mk = () => c.createBuffer(1, len, c.sampleRate);
+  const w = mk(), p = mk(), b = mk(); const W = w.getChannelData(0), Pp = p.getChannelData(0), B = b.getChannelData(0);
+  let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0, last = 0;
+  for (let i = 0; i < len; i++) {
+    const r = Math.random() * 2 - 1; W[i] = r;
+    b0 = .99886 * b0 + r * .0555179; b1 = .99332 * b1 + r * .0750759; b2 = .969 * b2 + r * .153852; b3 = .8665 * b3 + r * .3104856; b4 = .55 * b4 + r * .5329522; b5 = -.7616 * b5 - r * .016898;
+    Pp[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + r * .5362) * .11; b6 = r * .115926;
+    last = (last + .02 * r) / 1.02; B[i] = last * 3.5;
+  }
+  return { white: w, pink: p, brown: b };
+}
+function makeIR(c, secs) {
+  const len = Math.floor(c.sampleRate * secs), buf = c.createBuffer(2, len, c.sampleRate);
+  for (let ch = 0; ch < 2; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < len; i++) { const t = i / len; d[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 3.2) * (i < 80 ? i / 80 : 1); } }
+  return buf;
+}
+
+function audio() {
+  if (!E.ctx) initAudio();
+  if (E.ctx.state === 'suspended') E.ctx.resume();
+  return E.ctx;
+}
+function initAudio() {
+  const c = new (window.AudioContext || window.webkitAudioContext)(); E.ctx = c;
+  E.noise = makeNoise(c);
+  const G = (v = 1) => { const g = c.createGain(); g.gain.value = v; return g; };
+  E.voiceBus = G(1);
+  E.dist = c.createWaveShaper(); E.dist.oversample = '4x'; E.distPost = G(1);
+  E.voiceBus.connect(E.dist).connect(E.distPost);
+  E.comp = c.createDynamicsCompressor(); E.comp.threshold.value = -24; E.comp.ratio.value = 4; E.comp.attack.value = .01; E.comp.release.value = .2;
+  E.compDry = G(1); E.compWet = G(0); E.compOut = G(1);
+  E.distPost.connect(E.compDry).connect(E.compOut); E.distPost.connect(E.comp).connect(E.compWet).connect(E.compOut);
+  E.chDelay = c.createDelay(.1); E.chDelay.delayTime.value = .015; E.chWet = G(0); E.chOut = G(1);
+  E.chLfo = c.createOscillator(); E.chLfoG = G(0); E.chLfo.connect(E.chLfoG).connect(E.chDelay.delayTime); E.chLfo.start();
+  E.compOut.connect(E.chOut); E.compOut.connect(E.chDelay).connect(E.chWet).connect(E.chOut);
+  E.dl = c.createDelay(2); E.dlTone = c.createBiquadFilter(); E.dlTone.type = 'lowpass'; E.dlFb = G(0); E.dlWet = G(0); E.dlOut = G(1);
+  E.chOut.connect(E.dlOut); E.chOut.connect(E.dl); E.dl.connect(E.dlTone); E.dlTone.connect(E.dlFb).connect(E.dl); E.dlTone.connect(E.dlWet).connect(E.dlOut);
+  E.rv = c.createConvolver(); E.rvWet = G(0); E.rvOut = G(1);
+  E.dlOut.connect(E.rvOut); E.dlOut.connect(E.rv).connect(E.rvWet).connect(E.rvOut);
+  E.gator = G(1); E.rvOut.connect(E.gator);
+  E.pan = c.createStereoPanner(); E.panLfo = c.createOscillator(); E.panLfoG = G(0); E.panLfo.connect(E.panLfoG).connect(E.pan.pan); E.panLfo.start();
+  E.gator.connect(E.pan);
+  E.master = G(P.master);
+  E.limiter = c.createDynamicsCompressor(); E.limiter.threshold.value = -3; E.limiter.knee.value = 0; E.limiter.ratio.value = 20; E.limiter.attack.value = .002; E.limiter.release.value = .1;
+  E.analyser = c.createAnalyser(); E.analyser.fftSize = 4096; E.analyser.smoothingTimeConstant = .6;
+  E.pan.connect(E.master).connect(E.limiter); E.limiter.connect(E.analyser); E.limiter.connect(c.destination);
+  // fuentes de modulación globales
+  E.lfoOsc = c.createOscillator(); E.lfoSH = c.createConstantSource(); E.lfoSH.offset.value = 0; E.lfoOut = G(1);
+  E.lfoOsc.start(); E.lfoSH.start(); E.lfoCur = null;
+  E.lfo2 = c.createOscillator(); E.lfo2.start();
+  E.mw = c.createConstantSource(); E.mw.offset.value = P.modwheel; E.mw.start();
+  applyGlobal();
+  setInterval(tick, 25);
+  updatePower();
+}
+
+const now = () => E.ctx.currentTime;
+function holdAt(p, t) { if (p.cancelAndHoldAtTime) p.cancelAndHoldAtTime(t); else { const v = p.value; p.cancelScheduledValues(t); p.setValueAtTime(v, t); } }
+function envOn(p, t, peak, sus, a, d, retrig) {
+  if (retrig) holdAt(p, t); else { p.cancelScheduledValues(t); p.setValueAtTime(0, t); }
+  if (P.envRepeat) {
+    let tt = t; const cyc = Math.max(a + d, .02);
+    for (let k = 0; k < 400 && tt < t + 30; k++) { p.linearRampToValueAtTime(peak, tt + a); p.linearRampToValueAtTime(0, tt + cyc); tt += cyc; }
+    return;
+  }
+  p.linearRampToValueAtTime(peak, t + a);
+  p.setTargetAtTime(peak * sus, t + a, Math.max(d, .001) / 4);
+}
+function envOff(p, t, r) { holdAt(p, t); p.setTargetAtTime(0, t, Math.max(r, .001) / 4); }
+function resQ(r, type) { return type === 'bandpass' || type === 'notch' ? .4 + r * 18 : .5 + r * r * 26; }
+
+class Voice {
+  constructor(note, vel, t) {
+    const c = E.ctx; this.c = c; this.note = note; this.vel = vel; this.alive = true; this.nodes = []; this.srcs = []; this.links = [];
+    const G = (v = 1) => { const g = c.createGain(); g.gain.value = v; return g; };
+    const src = n => { this.srcs.push(n); return n; };
+    const f = mtof(note);
+    this.out = G(0); this.trem = G(1); this.mix = G(1);
+    this.o1 = G(1); this.o1Lvl = G(P.osc1Level); this.o2Lvl = G(P.osc2Level); this.ring = G(0); this.ringLvl = G(P.ringLevel); this.noiseG = G(P.noiseLevel * .7);
+    // VCO 1 + unison
+    this.pwSrc = src(c.createConstantSource()); this.pwSrc.offset.value = 2 * P.pw - 1;
+    this.osc1 = []; const N = P.unison | 0;
+    for (let i = 0; i < N; i++) {
+      const o = src(c.createOscillator()); o.type = P.wave1 === 'pulse' ? 'sawtooth' : P.wave1; o.frequency.value = f;
+      o._spread = N > 1 ? (i / (N - 1)) * 2 - 1 : 0; o._drift = (Math.random() * 2 - 1) * .5;
+      if (P.drift > 0) { const d = src(c.createOscillator()); d.frequency.value = .07 + Math.random() * .35; const dg = G(P.drift * .5); d.connect(dg).connect(o.detune); }
+      let node = o;
+      if (P.wave1 === 'pulse') { const s = G(1); o.connect(s); this.pwSrc.connect(s); const sh = c.createWaveShaper(); sh.curve = PULSE_CURVE; s.connect(sh); node = sh; }
+      node.connect(G(1 / Math.sqrt(N))).connect(this.o1);
+      this.osc1.push(o);
+    }
+    this.o1.connect(this.o1Lvl).connect(this.mix);
+    // VCO 2 + ring mod
+    this.osc2 = src(c.createOscillator()); this.osc2.type = P.wave2; this.osc2.frequency.value = f * Math.pow(2, P.osc2Semi / 12);
+    this.osc2.connect(this.o2Lvl).connect(this.mix);
+    this.o1.connect(this.ring); this.osc2.connect(this.ring.gain); this.ring.connect(this.ringLvl).connect(this.mix);
+    // ruido
+    this.noise = src(c.createBufferSource()); this.noise.buffer = E.noise[P.noiseColor]; this.noise.loop = true;
+    this.noise.connect(this.noiseG).connect(this.mix);
+    // drive + filtros
+    this.drv = c.createWaveShaper(); this.drv.curve = P.drive > 0 ? driveCurve(P.drive) : null; this.mix.connect(this.drv);
+    const stages = P.slope === '24' ? 2 : 1;
+    const mkF = type => { const b = c.createBiquadFilter(); b.type = type; return b; };
+    const chain = (list, input) => list.reduce((a, b) => (a.connect(b), b), input);
+    this.f1 = P.fType === 'off' ? [] : Array.from({ length: stages }, () => mkF(P.fType));
+    this.f2 = P.routing === 'single' ? [] : Array.from({ length: stages }, () => mkF(P.f2Type));
+    if (P.routing === 'paralelo') {
+      this.b1 = G(1 - P.balance); this.b2 = G(P.balance);
+      chain(this.f1, this.drv).connect(this.b1).connect(this.trem); chain(this.f2, this.drv).connect(this.b2).connect(this.trem);
+    } else chain([...this.f1, ...this.f2], this.drv).connect(this.trem);
+    this.filters = [...this.f1, ...this.f2];
+    this.trem.connect(this.out).connect(E.voiceBus);
+    // LFO 1
+    if (P.lfoSync && P.lfoWave !== 'random') { this.lfoRaw = src(c.createOscillator()); this.lfoRaw.type = P.lfoWave; this.lfoRaw.frequency.value = P.lfoRate; this.lfoLocal = true; }
+    else this.lfoRaw = E.lfoOut;
+    this.lfoFade = G(P.lfoFadeMode === 'fadein' || P.lfoFadeMode === 'gatein' ? 0 : 1); this.link(this.lfoRaw, this.lfoFade);
+    this.lfoDepth = G(0); this.lfoFade.connect(this.lfoDepth);
+    this.connectDest(this.lfoDepth, P.lfoDest);
+    if (P.lfoFadeMode === 'fadein') { this.lfoFade.gain.setValueAtTime(0, t); this.lfoFade.gain.linearRampToValueAtTime(1, t + P.lfoFade); }
+    else if (P.lfoFadeMode === 'gatein') { this.lfoFade.gain.setValueAtTime(0, t); this.lfoFade.gain.setValueAtTime(1, t + P.lfoFade); }
+    else if (P.lfoFadeMode === 'fadeout') { this.lfoFade.gain.setValueAtTime(1, t); this.lfoFade.gain.linearRampToValueAtTime(0, t + P.lfoFade); }
+    // fuentes por voz para la matriz
+    this.env3 = src(c.createConstantSource()); this.env3.offset.value = 0;
+    this.velSrc = src(c.createConstantSource()); this.velSrc.offset.value = vel;
+    this.kbdSrc = src(c.createConstantSource()); this.kbdSrc.offset.value = (note - 60) / 12;
+    this.mDepth = [];
+    for (let i = 1; i <= 3; i++) {
+      const s1 = P['m' + i + 's1'], s2 = P['m' + i + 's2'], dst = P['m' + i + 'dst'];
+      if (s1 === 'none' || dst === 'none') { this.mDepth.push(null); continue; }
+      let node = G(1); this.link(this.modSrc(s1), node);
+      if (s2 !== 'none') { const pr = G(0); node.connect(pr); this.link(this.modSrc(s2), pr.gain); node = pr; }
+      const dg = G(0); dg._dst = dst; dg._i = i; node.connect(dg); this.connectDest(dg, dst); this.mDepth.push(dg);
+    }
+    this.apply(t);
+    // envolventes
+    const peak = this.ampPeak(vel);
+    envOn(this.out.gain, t, peak, P.aS, P.aA, P.aD);
+    this.filters.forEach(b => envOn(b.detune, t, P.fEnvAmt * 1200, P.fS, P.fA, P.fD));
+    envOn(this.env3.offset, t, 1, P.fS, P.fA, P.fD);
+    this.noise.start(t, Math.random() * 1.5);
+    this.srcs.forEach(s => { if (s !== this.noise) s.start(t); });
+  }
+  ampPeak(vel) { return .2 * ((1 - P.velAmt) + P.velAmt * vel); }
+  link(s, d) { s.connect(d); this.links.push([s, d]); }
+  modSrc(n) { return { lfo1: this.lfoRaw, lfo2: E.lfo2, env: this.env3, mw: E.mw, vel: this.velSrc, kbd: this.kbdSrc }[n]; }
+  connectDest(g, dst) {
+    if (dst === 'pitch') { this.osc1.forEach(o => g.connect(o.detune)); g.connect(this.osc2.detune); }
+    else if (dst === 'osc2') g.connect(this.osc2.detune);
+    else if (dst === 'cutoff') this.filters.forEach(b => g.connect(b.detune));
+    else if (dst === 'amp') g.connect(this.trem.gain);
+    else if (dst === 'pw') g.connect(this.pwSrc.offset);
+    else if (dst === 'noise') g.connect(this.noiseG.gain);
+  }
+  apply(t = now()) {
+    const tc = .015, set = (p, v) => p.setTargetAtTime(v, t, tc);
+    const kt = Math.pow(2, (this.note - 60) / 12 * P.keytrack);
+    this.f1.forEach(b => { set(b.frequency, clamp(P.cutoff * kt, 20, 20000)); b.Q.value = resQ(P.res, b.type); });
+    this.f2.forEach(b => { set(b.frequency, clamp(P.f2Cutoff * kt, 20, 20000)); b.Q.value = resQ(P.res, b.type); });
+    if (this.b1) { set(this.b1.gain, 1 - P.balance); set(this.b2.gain, P.balance); }
+    set(this.o1Lvl.gain, P.osc1Level); set(this.o2Lvl.gain, P.osc2Level); set(this.ringLvl.gain, P.ringLevel); set(this.noiseG.gain, P.noiseLevel * .7);
+    this.osc1.forEach(o => { o.detune.value = o._spread * P.detune + o._drift * P.drift; if (P.wave1 !== 'pulse' && o.type !== P.wave1) o.type = P.wave1; });
+    if (this.osc2.type !== P.wave2) this.osc2.type = P.wave2;
+    set(this.osc2.frequency, mtof(this.note) * Math.pow(2, P.osc2Semi / 12)); this.osc2.detune.value = P.osc2Cents;
+    set(this.pwSrc.offset, 2 * P.pw - 1);
+    if (this._drive !== P.drive) { this.drv.curve = P.drive > 0 ? driveCurve(P.drive) : null; this._drive = P.drive; }
+    const d = P.lfoDepth, dst = P.lfoDest;
+    set(this.lfoDepth.gain, dst === 'pitch' ? d * d * 1200 : dst === 'cutoff' ? d * 3600 : dst === 'amp' ? d / 2 : dst === 'pw' ? d * .9 : 0);
+    let tremBase = dst === 'amp' ? 1 - d / 2 : 1;
+    this.mDepth.forEach(g => {
+      if (!g) return; const a = P['m' + g._i + 'amt'], k = g._dst;
+      set(g.gain, k === 'pitch' || k === 'osc2' ? a * 1200 : k === 'cutoff' ? a * 4800 : k === 'pw' ? a * .9 : a);
+      if (k === 'amp' && a < 0) tremBase = Math.max(tremBase, -a);
+    });
+    set(this.trem.gain, tremBase);
+    if (this.lfoLocal) set(this.lfoRaw.frequency, P.lfoRate);
+  }
+  setNote(n, t, glide) {
+    this.note = n; const f = mtof(n), tc = Math.max(glide / 3, .002);
+    this.osc1.forEach(o => o.frequency.setTargetAtTime(f, t, tc));
+    this.osc2.frequency.setTargetAtTime(f * Math.pow(2, P.osc2Semi / 12), t, tc);
+    this.kbdSrc.offset.setTargetAtTime((n - 60) / 12, t, tc);
+    this.apply(t);
+  }
+  retrigger(t, vel) {
+    this.vel = vel; this.velSrc.offset.setValueAtTime(vel, t);
+    envOn(this.out.gain, t, this.ampPeak(vel), P.aS, P.aA, P.aD, true);
+    this.filters.forEach(b => envOn(b.detune, t, P.fEnvAmt * 1200, P.fS, P.fA, P.fD, true));
+    envOn(this.env3.offset, t, 1, P.fS, P.fA, P.fD, true);
+  }
+  release(t) {
+    if (!this.alive) return; this.alive = false;
+    envOff(this.out.gain, t, P.aR); this.filters.forEach(b => envOff(b.detune, t, P.fR)); envOff(this.env3.offset, t, P.fR);
+    const end = t + P.aR * 1.8 + .1; this.stopAt(end);
+  }
+  kill() { const t = now(); this.alive = false; holdAt(this.out.gain, t); this.out.gain.setTargetAtTime(0, t, .006); this.stopAt(t + .06); }
+  stopAt(end) {
+    this.srcs.forEach(s => { try { s.stop(end); } catch { } });
+    clearTimeout(this._to);
+    this._to = setTimeout(() => this.dispose(), Math.max(0, (end - now()) * 1000) + 120);
+  }
+  dispose() { this.links.forEach(([s, d]) => { try { s.disconnect(d); } catch { } }); try { this.out.disconnect(); } catch { } }
+}
+
+function applyGlobal() {
+  if (!E.ctx) return;
+  const t = now(), set = (p, v) => p.setTargetAtTime(v, t, .02);
+  // LFO global
+  E.lfoOsc.frequency.value = P.lfoRate;
+  const want = P.lfoWave === 'random' ? E.lfoSH : E.lfoOsc;
+  if (P.lfoWave !== 'random') E.lfoOsc.type = P.lfoWave;
+  if (E.lfoCur !== want) { if (E.lfoCur) E.lfoCur.disconnect(E.lfoOut); want.connect(E.lfoOut); E.lfoCur = want; }
+  E.lfo2.frequency.value = P.lfo2Rate;
+  set(E.mw.offset, P.modwheel);
+  // efectos
+  E.dist.curve = curveFor(P.distType, P.distAmt);
+  set(E.distPost.gain, P.distType === 'off' ? 1 : P.distType === 'bits' ? .9 : .7);
+  set(E.compDry.gain, P.compOn ? 0 : 1); set(E.compWet.gain, P.compOn ? 1.6 : 0);
+  E.chLfo.frequency.value = P.chorusRate; set(E.chLfoG.gain, P.chorusDepth / 1000); set(E.chWet.gain, P.chorusMix);
+  set(E.dl.delayTime, P.delayTime); set(E.dlFb.gain, P.delayFb); set(E.dlTone.frequency, P.delayTone); set(E.dlWet.gain, P.delayMix);
+  if (Math.abs(E.rvSizeBuilt - P.reverbSize) > .05) { clearTimeout(E.rvTimer); E.rvTimer = setTimeout(() => { E.rv.buffer = makeIR(E.ctx, P.reverbSize); E.rvSizeBuilt = P.reverbSize; }, 120); }
+  set(E.rvWet.gain, P.reverbMix * 1.4);
+  if (!P.gatorOn) { E.gator.gain.cancelScheduledValues(t); set(E.gator.gain, 1); }
+  E.panLfo.frequency.value = P.panRate; set(E.panLfoG.gain, P.panDepth);
+  set(E.master.gain, P.master);
+}
+function allVoices() { const s = new Set(E.voices.values()); if (E.mono) s.add(E.mono); return s; }
+function applyVoices() { if (!E.ctx) return; allVoices().forEach(v => v.alive && v.apply()); }
+function restrike() {
+  if (!E.ctx) return; const t = now() + .01;
+  for (const [n, v] of E.voices) { v.kill(); E.voices.set(n, new Voice(n, v.vel, t)); }
+  if (E.mono) { const n = E.mono.note, vel = E.mono.vel; E.mono.kill(); E.mono = new Voice(n, vel, t); }
+}
+function allOff() {
+  if (!E.ctx) return;
+  allVoices().forEach(v => v.kill()); E.voices.clear(); E.mono = null; E.monoStack = []; E.arpHeld = []; E.phys.clear();
+  UI.keysOff && UI.keysOff();
+}
+
+/* ---- notas ---- */
+const CHORDS = { none: [0], maj: [0, 4, 7], min: [0, 3, 7], dom7: [0, 4, 7, 10], min7: [0, 3, 7, 10], sus4: [0, 5, 7], fifth: [0, 7, 12] };
+const expand = n => CHORDS[P.chord].map(i => n + i);
+function noteOn(n, vel) {
+  const t = now() + .005;
+  if (P.voiceMode === 'poly') {
+    if (E.voices.has(n)) E.voices.get(n).release(t);
+    if (E.voices.size >= 10) { const [k, v] = E.voices.entries().next().value; v.release(t); E.voices.delete(k); }
+    E.voices.set(n, new Voice(n, vel, t)); return;
+  }
+  E.monoStack = E.monoStack.filter(x => x !== n); E.monoStack.push(n);
+  if (E.mono && E.mono.alive) { E.mono.setNote(n, t, P.glide); if (P.voiceMode === 'mono') E.mono.retrigger(t, vel); }
+  else E.mono = new Voice(n, vel, t);
+}
+function noteOff(n) {
+  const t = now() + .005;
+  if (P.voiceMode === 'poly') { const v = E.voices.get(n); if (v) { v.release(t); E.voices.delete(n); } return; }
+  E.monoStack = E.monoStack.filter(x => x !== n);
+  if (!E.mono) return;
+  if (E.monoStack.length) { const p = E.monoStack[E.monoStack.length - 1]; if (p !== E.mono.note) { E.mono.setNote(p, t, P.glide); if (P.voiceMode === 'mono') E.mono.retrigger(t, E.lastVel); } }
+  else { E.mono.release(t); E.mono = null; }
+}
+function keyDown(n, vel) {
+  audio(); updatePower(); E.lastVel = vel; UI.readout(n, vel);
+  const notes = expand(n);
+  if (P.arpOn) {
+    if (P.latch && E.phys.size === 0) E.arpHeld = [];
+    E.phys.add(n); notes.forEach(m => { if (!E.arpHeld.includes(m)) E.arpHeld.push(m); });
+    return;
+  }
+  notes.forEach(m => noteOn(m, vel));
+}
+function keyUp(n) {
+  if (!E.ctx) return;
+  const notes = expand(n);
+  if (P.arpOn) { E.phys.delete(n); if (!P.latch) E.arpHeld = E.arpHeld.filter(x => !notes.includes(x)); return; }
+  notes.forEach(m => noteOff(m));
+}
+
+/* ---- reloj: arpegiador, gator, S&H ---- */
+function tick() {
+  const c = E.ctx; if (!c) return; const t0 = c.currentTime;
+  if (P.lfoWave === 'random') {
+    if (E.nextSH < t0) E.nextSH = t0 + .02;
+    while (E.nextSH < t0 + .12) { E.lfoSH.offset.setValueAtTime(Math.random() * 2 - 1, E.nextSH); E.nextSH += 1 / P.lfoRate; }
+  }
+  if (!(P.arpOn || P.gatorOn)) { E.nextStep = 0; return; }
+  const sd = 60 / P.bpm / 4;
+  if (E.nextStep < t0) { E.nextStep = t0 + .05; E.step = 0; }
+  while (E.nextStep < t0 + .12) { step(E.step, E.nextStep, sd); E.nextStep += sd; E.step++; }
+}
+function step(i, t, sd) {
+  if (P.gatorOn) {
+    const on = E.gatorSteps[i % 16];
+    E.gator.gain.setTargetAtTime(on ? 1 : 0, t, Math.max(.001, P.gatorSlew));
+    E.stepQueue.push([t, i % 16]);
+  }
+  if (P.arpOn) {
+    const div = 16 / +P.arpRate; if (i % div) return;
+    const base = P.arpMode === 'played' ? [...E.arpHeld] : [...E.arpHeld].sort((a, b) => a - b);
+    if (!base.length) { E.arpIdx = 0; return; }
+    let L = []; for (let o = 0; o < P.arpOct; o++) L = L.concat(base.map(n => n + 12 * o));
+    if (P.arpMode === 'down') L.reverse();
+    if (P.arpMode === 'updown' && L.length > 2) L = L.concat(L.slice(1, -1).reverse());
+    const n = P.arpMode === 'random' ? L[Math.floor(Math.random() * L.length)] : L[E.arpIdx++ % L.length];
+    const len = sd * div * P.arpGate;
+    const v = new Voice(n, E.lastVel, t); v.release(t + len);
+    setTimeout(() => UI.readout(n, E.lastVel, true), Math.max(0, (t - now()) * 1000));
+  }
+}
+
+/* ================= interfaz ================= */
+const UI = {};
+const state = { ch: 0, perCh: {} };
+
+// Prólogo e introducción no llevan número: su ruta es #prologo / #introduccion.
+const chNum = n => typeof n === 'number' ? String(n).padStart(2, '0') : '';
+function chapterHref(n) { return typeof n === 'number' ? '#cap-' + n : '#' + n; }
+function renderToc() {
+  $('#toc').innerHTML = CHAPTERS.map(c => `<a href="${chapterHref(c.n)}" data-n="${c.n}"><span class="num">${chNum(c.n)}</span><span>${c.title}</span></a>`).join('');
+}
+function renderChapter(n) {
+  const i = CHAPTERS.findIndex(c => c.n === n), c = CHAPTERS[i];
+  const prev = CHAPTERS[i - 1], next = CHAPTERS[i + 1];
+  $('#chapter').innerHTML = `<p class="eyebrow">${c.kick}</p><h2>${typeof c.n === 'number' ? `<span class="chn">${chNum(c.n)}</span>` : ''}${c.title}</h2>${c.html}
+    <nav class="pager" aria-label="Capítulos vecinos">${prev ? `<a href="${chapterHref(prev.n)}"><span>Anterior</span>${prev.title}</a>` : '<span></span>'}${next ? `<a href="${chapterHref(next.n)}" style="text-align:right"><span>Siguiente</span>${next.title}</a>` : ''}</nav>`;
+  document.querySelectorAll('#toc a').forEach(a => a.setAttribute('aria-current', a.dataset.n === String(n) ? 'page' : 'false'));
+}
+
+function sliderPos(spec, v) { return spec.log ? Math.round(Math.log(v / spec.min) / Math.log(spec.max / spec.min) * 1000) : v; }
+function sliderVal(spec, pos) { return spec.log ? spec.min * Math.pow(spec.max / spec.min, pos / 1000) : +pos; }
+
+function renderLab(n) {
+  const lab = LABS[n];
+  $('#app').classList.toggle('no-lab', !lab);
+  if (!lab) { $('#lab').innerHTML = ''; return; }
+  if (!state.perCh[n]) state.perCh[n] = { ...DEFAULTS, ...(lab.extraPreset || {}), ...lab.preset };
+  const structuralBefore = JSON.stringify(structKey(P));
+  P = state.perCh[n];
+  allOff();
+  const secs = []; const bySec = {};
+  lab.controls.forEach(id => { const s = C[id].sec; if (!bySec[s]) { bySec[s] = []; secs.push(s); } bySec[s].push(id); });
+  const ctrlHtml = id => {
+    const s = C[id], lbl = (lab.relabel && lab.relabel[id]) || s.l, cid = 'c-' + id;
+    if (s.t === 'sel') return `<div class="ctrl"><div class="ctrl-top"><label for="${cid}">${lbl}</label></div><select id="${cid}" data-id="${id}">${s.o.map(([v, t]) => `<option value="${v}">${t}</option>`).join('')}</select></div>`;
+    if (s.t === 'tog') return `<div class="ctrl tog"><input type="checkbox" id="${cid}" data-id="${id}"><label for="${cid}">${lbl}</label></div>`;
+    const rng = s.log ? 'min="0" max="1000" step="1"' : `min="${s.min}" max="${s.max}" step="${s.step}"`;
+    return `<div class="ctrl"><div class="ctrl-top"><label for="${cid}">${lbl}</label><output id="o-${id}"></output></div><input type="range" id="${cid}" data-id="${id}" ${rng}></div>`;
+  };
+  const secHtml = secs.map(s => `<div class="sec" style="--jack:${JACK[s] || 'var(--audio)'}"><p class="sec-title">${(lab.secRename && lab.secRename[s]) || s}</p><div class="ctrls">${bySec[s].map(ctrlHtml).join('')}</div>
+      ${s === 'Gator' && lab.gator ? `<div class="gator" id="gator" role="group" aria-label="Pasos del gator">${E.gatorSteps.map((v, i) => `<button type="button" aria-pressed="${!!v}" aria-label="Paso ${i + 1}" data-step="${i}"></button>`).join('')}</div>` : ''}</div>`).join('');
+  const screens = lab.show.map((k, i) => {
+    const lbl = { scope: 'Osciloscopio', spectrum: 'Espectro', filter: 'Respuesta del filtro', adsr: 'ENV 1 · ENV 2' }[k];
+    return `<div class="screen${lab.show.length === 1 ? ' wide' : ''}"><span class="screen-label">${lbl}</span><canvas data-screen="${k}" aria-label="${lbl}"></canvas></div>`;
+  }).join('');
+  $('#lab').innerHTML = `
+    <div class="screws" aria-hidden="true"><span class="screw" style="left:-8px;top:-6px"></span><span class="screw" style="right:-8px;top:-6px"></span></div>
+    <div class="lab-head"><div class="lab-title">${lab.name}<small>Laboratorio · capítulo ${String(n).padStart(2, '0')}</small></div><button class="reset" type="button" id="reset">Restablecer</button></div>
+    <div class="screens">${screens}</div>
+    <div class="readout" aria-live="polite"><div><span>Nota</span><b id="r-note">—</b></div><div><span>V/Oct</span><b id="r-volt">—</b></div><div><span>Frecuencia</span><b id="r-hz">—</b></div></div>
+    <div class="kbd-strip"><div class="wheel"><input type="range" id="modwheel" min="0" max="1" step="0.01" aria-label="Mod wheel"><label for="modwheel">Mod<br>wheel</label></div><div class="keys" id="keys" role="group" aria-label="Teclado"></div></div>
+    <div class="kbd-ctrl"><button type="button" id="oct-dn" aria-label="Bajar una octava">Oct −</button><span id="oct-lbl"></span><button type="button" id="oct-up" aria-label="Subir una octava">Oct +</button>
+      <button type="button" id="hold" aria-pressed="false">Hold</button><span class="vel"><label for="kvel">Vel. teclado PC</label><input type="range" id="kvel" min="0.05" max="1" step="0.01"></span></div>
+    <p class="hint">Teclas <kbd>A</kbd>–<kbd>K</kbd> tocan una octava (<kbd>W</kbd><kbd>E</kbd><kbd>T</kbd><kbd>Y</kbd><kbd>U</kbd> son las negras). <kbd>Z</kbd>/<kbd>X</kbd> cambian de octava. En pantalla, un clic más abajo en la tecla da más velocity.</p>
+    ${lab.presets ? `<div class="presets" role="group" aria-label="Patches">${lab.presets.map(([name], i) => `<button type="button" data-preset="${i}" aria-pressed="false">${name}</button>`).join('')}</div>` : ''}
+    <div class="sections">${secHtml}</div>
+    <div class="try"><h4>Prueba esto</h4><ol>${lab.tries.map(t => `<li>${t}</li>`).join('')}</ol></div>`;
+  bindLab(n);
+  syncControls();
+  renderKeys();
+  applyGlobal();
+  if (structuralBefore !== JSON.stringify(structKey(P))) restrike();
+}
+function structKey(p) { return Object.keys(C).filter(k => C[k].st).map(k => p[k]); }
+function syncControls() {
+  document.querySelectorAll('#lab [data-id]').forEach(el => {
+    const id = el.dataset.id, s = C[id], v = P[id];
+    if (s.t === 'tog') el.checked = !!v; else if (s.t === 'sel') el.value = v; else { el.value = sliderPos(s, v); const o = $('#o-' + id); if (o) o.textContent = s.f(v); }
+  });
+  const mw = $('#modwheel'); if (mw) mw.value = P.modwheel;
+  const kv = $('#kvel'); if (kv) kv.value = E.lastVel;
+  drawStatic();
+}
+function setParam(id, v) {
+  P[id] = v; const s = C[id];
+  if (id === 'voiceMode' || id === 'arpOn' || id === 'chord') allOff();
+  if (s && s.st) restrike(); else applyVoices();
+  applyGlobal(); drawStatic();
+}
+function bindLab(n) {
+  const lab = LABS[n];
+  document.querySelectorAll('#lab [data-id]').forEach(el => {
+    const id = el.dataset.id, s = C[id];
+    el.addEventListener('input', () => {
+      let v = s.t === 'tog' ? el.checked : s.t === 'sel' ? el.value : sliderVal(s, el.value);
+      if (s.t !== 'tog' && s.t !== 'sel') { const o = $('#o-' + id); if (o) o.textContent = s.f(v); }
+      setParam(id, v);
+      document.querySelectorAll('.presets button').forEach(b => b.setAttribute('aria-pressed', 'false'));
+    });
+  });
+  $('#reset').addEventListener('click', () => { state.perCh[n] = null; renderLab(n); });
+  $('#modwheel').addEventListener('input', e => { P.modwheel = +e.target.value; applyGlobal(); });
+  $('#kvel').addEventListener('input', e => { E.lastVel = +e.target.value; });
+  $('#oct-dn').addEventListener('click', () => { E.oct = Math.max(-3, E.oct - 1); allOff(); renderKeys(); });
+  $('#oct-up').addEventListener('click', () => { E.oct = Math.min(3, E.oct + 1); allOff(); renderKeys(); });
+  $('#hold').addEventListener('click', e => { UI.hold = !UI.hold; e.currentTarget.setAttribute('aria-pressed', UI.hold); if (!UI.hold) allOff(); });
+  $('#hold').setAttribute('aria-pressed', !!UI.hold);
+  const g = $('#gator');
+  if (g) g.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const i = +b.dataset.step; E.gatorSteps[i] = E.gatorSteps[i] ? 0 : 1; b.setAttribute('aria-pressed', !!E.gatorSteps[i]); });
+  document.querySelectorAll('.presets button').forEach(b => b.addEventListener('click', () => {
+    const [, p] = lab.presets[+b.dataset.preset];
+    allOff(); Object.assign(P, DEFAULTS, p); state.perCh[n] = P;
+    syncControls(); applyGlobal(); restrike();
+    document.querySelectorAll('.presets button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  }));
+}
+
+/* ---- teclado ---- */
+const KEYMAP = { a: 0, w: 1, s: 2, e: 3, d: 4, f: 5, t: 6, g: 7, y: 8, h: 9, u: 10, j: 11, k: 12, o: 13, l: 14, p: 15, 'ñ': 16, ';': 16 };
+const BLACK = [1, 3, 6, 8, 10];
+const kbBase = () => 48 + 12 * E.oct;
+const pcBase = () => 60 + 12 * E.oct;
+function renderKeys() {
+  const el = $('#keys'); if (!el) return;
+  const base = kbBase(), whites = [], blacks = [];
+  for (let n = base; n <= base + 24; n++) (BLACK.includes(n % 12) ? blacks : whites).push(n);
+  const w = 100 / whites.length;
+  el.innerHTML = whites.map(n => `<div class="key" data-note="${n}">${n % 12 === 0 ? `<span class="cap">${noteName(n)}</span>` : ''}</div>`).join('') +
+    blacks.map(n => { const wi = whites.indexOf(n - 1); return `<div class="key black" data-note="${n}" style="left:calc(${(wi + 1) * w}% - ${w * .32}%);width:${w * .64}%"></div>`; }).join('');
+  $('#oct-lbl').textContent = noteName(base) + '–' + noteName(base + 24);
+  const active = new Map();
+  const down = (e, k) => {
+    const n = +k.dataset.note, r = k.getBoundingClientRect(), vel = clamp(.25 + .75 * (e.clientY - r.top) / r.height, .05, 1);
+    if (UI.hold) { if (k.classList.contains('on')) { k.classList.remove('on'); keyUp(n); } else { k.classList.add('on'); keyDown(n, vel); } return; }
+    k.classList.add('on'); active.set(e.pointerId, n); keyDown(n, vel);
+  };
+  const up = e => { const n = active.get(e.pointerId); if (n == null) return; active.delete(e.pointerId); const k = el.querySelector(`[data-note="${n}"]`); if (k) k.classList.remove('on'); keyUp(n); };
+  el.onpointerdown = e => { const k = e.target.closest('.key'); if (!k) return; e.preventDefault(); el.setPointerCapture(e.pointerId); down(e, k); };
+  el.onpointerup = up; el.onpointercancel = up;
+}
+UI.keysOff = () => document.querySelectorAll('.key.on').forEach(k => k.classList.remove('on'));
+const pcDown = new Map();
+addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+  const tag = (e.target.tagName || '').toLowerCase(); if (tag === 'select' || (tag === 'input' && e.target.type !== 'range' && e.target.type !== 'checkbox')) return;
+  const key = e.key.toLowerCase();
+  if (key === 'z' || key === 'x') { E.oct = clamp(E.oct + (key === 'z' ? -1 : 1), -3, 3); allOff(); renderKeys(); return; }
+  if (!(key in KEYMAP) || !LABS[state.ch]) return;
+  e.preventDefault();
+  const n = pcBase() + KEYMAP[key]; pcDown.set(key, n);
+  const k = document.querySelector(`.key[data-note="${n}"]`); if (k) k.classList.add('on');
+  keyDown(n, E.lastVel);
+});
+addEventListener('keyup', e => {
+  const key = e.key.toLowerCase(); const n = pcDown.get(key); if (n == null) return; pcDown.delete(key);
+  if (UI.hold) return;
+  const k = document.querySelector(`.key[data-note="${n}"]`); if (k) k.classList.remove('on');
+  keyUp(n);
+});
+addEventListener('blur', () => { if (!UI.hold) { pcDown.clear(); allOff(); } });
+
+UI.readout = (n) => {
+  const a = $('#r-note'), b = $('#r-volt'), c = $('#r-hz'); if (!a) return;
+  a.textContent = noteName(n); b.textContent = ((n - 60) >= 0 ? '+' : '−') + num(Math.abs((n - 60) / 12), 3) + ' V'; c.textContent = num(mtof(n), 2) + ' Hz';
+};
+function updatePower() {
+  const on = E.ctx && E.ctx.state === 'running';
+  $('#power').setAttribute('aria-pressed', !!on);
+  $('#power-label').textContent = on ? 'Audio activo' : 'Activar audio';
+}
+$('#power').addEventListener('click', () => {
+  if (E.ctx && E.ctx.state === 'running') { E.ctx.suspend().then(updatePower); allOff(); }
+  else { audio(); setTimeout(updatePower, 60); }
+});
+
+/* ---- pantallas ---- */
+let colors = {};
+function readColors() { const cs = getComputedStyle(document.documentElement); ['--screen', '--screen-ink', '--screen-grid', '--audio', '--cv', '--gate'].forEach(k => colors[k] = cs.getPropertyValue(k).trim()); }
+function fitCanvas(cv) { const r = cv.getBoundingClientRect(), d = devicePixelRatio || 1; const w = Math.round(r.width * d), h = Math.round(r.height * d); if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; } return [w, h, d]; }
+const logX = (f, w) => Math.log(f / 20) / Math.log(20000 / 20) * w;
+function grid(g, w, h, d, kind) {
+  g.fillStyle = colors['--screen']; g.fillRect(0, 0, w, h);
+  g.strokeStyle = colors['--screen-grid']; g.lineWidth = 1;
+  g.beginPath();
+  if (kind === 'freq') [50, 100, 200, 500, 1000, 2000, 5000, 10000].forEach(f => { const x = Math.round(logX(f, w)) + .5; g.moveTo(x, 0); g.lineTo(x, h); });
+  else for (let i = 1; i < 8; i++) { const x = Math.round(w * i / 8) + .5; g.moveTo(x, 0); g.lineTo(x, h); }
+  for (let i = 1; i < 4; i++) { const y = Math.round(h * i / 4) + .5; g.moveTo(0, y); g.lineTo(w, y); }
+  g.stroke();
+  if (kind === 'freq') { g.fillStyle = colors['--screen-ink']; g.globalAlpha = .45; g.font = `${9 * d}px ui-monospace, monospace`; [[100, '100'], [1000, '1k'], [10000, '10k']].forEach(([f, t]) => g.fillText(t, logX(f, w) + 3 * d, h - 4 * d)); g.globalAlpha = 1; }
+}
+const tbuf = new Float32Array(4096), fbuf = new Float32Array(2048);
+function drawScope(cv) {
+  const [w, h, d] = fitCanvas(cv), g = cv.getContext('2d'); grid(g, w, h, d, 'time');
+  if (!E.analyser) return;
+  E.analyser.getFloatTimeDomainData(tbuf);
+  let s = 0; for (let i = 1; i < 2048; i++) if (tbuf[i - 1] < 0 && tbuf[i] >= 0) { s = i; break; }
+  const span = 1024; g.strokeStyle = colors['--screen-ink']; g.lineWidth = 1.6 * d; g.beginPath();
+  for (let i = 0; i < span; i++) { const x = i / (span - 1) * w, y = h / 2 - tbuf[s + i] * h * .42; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+  g.stroke();
+}
+function drawSpectrum(cv) {
+  const [w, h, d] = fitCanvas(cv), g = cv.getContext('2d'); grid(g, w, h, d, 'freq');
+  if (!E.analyser) return;
+  E.analyser.getFloatFrequencyData(fbuf);
+  const sr = E.ctx.sampleRate, bin = sr / E.analyser.fftSize;
+  g.strokeStyle = colors['--screen-ink']; g.lineWidth = 1.4 * d; g.beginPath(); let first = true;
+  for (let x = 0; x < w; x += 2 * d) {
+    const f = 20 * Math.pow(1000, x / w), i = Math.round(f / bin); if (i >= fbuf.length) break;
+    const db = Math.max(fbuf[i], fbuf[i + 1] || -200), y = h - clamp((db + 100) / 90, 0, 1) * h;
+    first ? g.moveTo(x, y) : g.lineTo(x, y); first = false;
+  }
+  g.stroke();
+}
+const off = new OfflineAudioContext(1, 1, 44100);
+const RESP_N = 256, respF = new Float32Array(RESP_N), m1 = new Float32Array(RESP_N), p1 = new Float32Array(RESP_N), m2 = new Float32Array(RESP_N), p2 = new Float32Array(RESP_N);
+for (let i = 0; i < RESP_N; i++) respF[i] = 20 * Math.pow(1000, i / (RESP_N - 1));
+function drawFilter(cv) {
+  const [w, h, d] = fitCanvas(cv), g = cv.getContext('2d'); grid(g, w, h, d, 'freq');
+  const st = P.slope === '24' ? 2 : 1;
+  const resp = (type, fc, mag, ph) => { if (type === 'off') { mag.fill(1); ph.fill(0); return; } const b = off.createBiquadFilter(); b.type = type; b.frequency.value = fc; b.Q.value = resQ(P.res, type); b.getFrequencyResponse(respF, mag, ph); for (let i = 0; i < RESP_N; i++) { mag[i] = Math.pow(mag[i], st); ph[i] *= st; } };
+  resp(P.fType, P.cutoff, m1, p1);
+  const out = new Float32Array(RESP_N);
+  if (P.routing === 'single') out.set(m1);
+  else {
+    resp(P.f2Type, P.f2Cutoff, m2, p2);
+    for (let i = 0; i < RESP_N; i++) {
+      if (P.routing === 'serie') out[i] = m1[i] * m2[i];
+      else { const a = 1 - P.balance, b = P.balance; const re = a * m1[i] * Math.cos(p1[i]) + b * m2[i] * Math.cos(p2[i]), im = a * m1[i] * Math.sin(p1[i]) + b * m2[i] * Math.sin(p2[i]); out[i] = Math.hypot(re, im); }
+    }
+  }
+  const y0 = db => h * .3 - db / 60 * h * .7;
+  g.strokeStyle = colors['--screen-grid']; g.setLineDash([3 * d, 3 * d]); g.beginPath(); g.moveTo(0, y0(0)); g.lineTo(w, y0(0)); g.stroke(); g.setLineDash([]);
+  g.strokeStyle = colors['--audio']; g.lineWidth = 1.8 * d; g.beginPath();
+  for (let i = 0; i < RESP_N; i++) { const x = i / (RESP_N - 1) * w, db = 20 * Math.log10(Math.max(out[i], 1e-5)), y = clamp(y0(db), 0, h); i ? g.lineTo(x, y) : g.moveTo(x, y); }
+  g.stroke();
+}
+function drawADSR(cv) {
+  const [w, h, d] = fitCanvas(cv), g = cv.getContext('2d'); grid(g, w, h, d, 'time');
+  const hold = .8, total = Math.max(P.aA + P.aD * 1.5 + hold, P.fA + P.fD * 1.5 + hold) + Math.max(P.aR, P.fR) * 1.3;
+  const shape = (A, D, S, R, color, peak) => {
+    g.strokeStyle = color; g.lineWidth = 1.8 * d; g.beginPath();
+    const offT = Math.max(A + D * 1.5, .05) + hold;
+    for (let x = 0; x <= w; x += d) {
+      const t = x / w * total; let v;
+      const atOn = tt => tt < A ? tt / A : S + (1 - S) * Math.exp(-(tt - A) / (Math.max(D, .001) / 4));
+      if (P.envRepeat && t < offT) { const cyc = Math.max(A + D, .02), tt = t % cyc; v = tt < A ? tt / A : 1 - (tt - A) / Math.max(D, .001); }
+      else v = t < offT ? atOn(t) : atOn(offT) * Math.exp(-(t - offT) / (Math.max(R, .001) / 4));
+      const y = h - 6 * d - v * peak * (h - 22 * d); x ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.stroke();
+  };
+  shape(P.fA, P.fD, P.fS, P.fR, colors['--cv'], .85);
+  shape(P.aA, P.aD, P.aS, P.aR, colors['--audio'], 1);
+  g.fillStyle = colors['--screen-ink']; g.globalAlpha = .5; g.font = `${9 * d}px ui-monospace, monospace`; g.fillText(num(total, 1) + ' s', w - 40 * d, h - 6 * d); g.globalAlpha = 1;
+}
+function drawStatic() { document.querySelectorAll('canvas[data-screen="filter"]').forEach(drawFilter); document.querySelectorAll('canvas[data-screen="adsr"]').forEach(drawADSR); }
+function frame() {
+  document.querySelectorAll('canvas[data-screen="scope"]').forEach(drawScope);
+  document.querySelectorAll('canvas[data-screen="spectrum"]').forEach(drawSpectrum);
+  if (E.ctx && E.stepQueue.length) {
+    const t = now(); while (E.stepQueue.length && E.stepQueue[0][0] <= t) E.curStep = E.stepQueue.shift()[1];
+    document.querySelectorAll('#gator button').forEach((b, i) => b.classList.toggle('now', P.gatorOn && i === E.curStep));
+  }
+  requestAnimationFrame(frame);
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { readColors(); drawStatic(); });
+new MutationObserver(() => { readColors(); drawStatic(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+addEventListener('resize', drawStatic);
+
+/* ---- rutas ---- */
+function route() {
+  // Sin ruta ni capítulo guardado, la guía abre en el prólogo.
+  const leer = v => /^\d+$/.test(v) ? +v : v;
+  const m = /^#(?:cap-(\d+)|(prologo|introduccion))$/.exec(location.hash);
+  let n = m ? leer(m[1] ?? m[2]) : leer(store.get('vcv-cap') || 'prologo');
+  if (!CHAPTERS.some(c => c.n === n)) n = 'prologo';
+  const changed = n !== state.ch || !$('#chapter').innerHTML;
+  state.ch = n; store.set('vcv-cap', n);
+  renderChapter(n); renderLab(n);
+  if (changed && m) scrollTo({ top: 0 });
+}
+addEventListener('hashchange', route);
+readColors(); renderToc(); route(); requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>

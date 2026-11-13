@@ -1,0 +1,10 @@
+{
+  "id": "cultura-tecnica",
+  "title": "Cultura técnica de la cooperativa",
+  "summary": "Cómo trabajamos en tecnocooperativa: nuestras herramientas, cómo proponer y colaborar, y cómo llegar a ser socio.",
+  "teacher": { "name": "Tecnocooperativa" },
+  "status": "preparing",
+  "formats": ["web"],
+  "topics": ["cooperativa", "colaboración", "cultura técnica"],
+  "cover": "portada.svg"
+}

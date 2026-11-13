@@ -1,0 +1,10 @@
+{
+  "id": "armonia-basica",
+  "title": "Armonía básica",
+  "summary": "Notas, intervalos y acordes desde cero, con entrenamiento de oído y un pentagrama para practicar.",
+  "teacher": { "name": "Por confirmar" },
+  "status": "preparing",
+  "formats": ["web", "interactive"],
+  "topics": ["música", "teoría", "oído"],
+  "cover": "portada.svg"
+}

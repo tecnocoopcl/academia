@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kit de academia</title>
+  <link rel="stylesheet" href="./academia.css">
+  <script type="module" src="./academia-kit.js"></script>
+</head>
+<body>
+  <main class="ac-pagina">
+    <nav class="ac-migas"><a href="/">academia</a> › kit</nav>
+    <header class="ac-cabecera">
+      <h1>Kit de academia</h1>
+      <p class="ac-bajada">Componentes para que un curso se pueda tocar. HTML plano, sin instalar nada.</p>
+    </header>
+
+    <h2>Uso</h2>
+    <pre><code>&lt;link rel="stylesheet" href="https://academia.tecnocooperativa.cl/kit/academia.css"&gt;
+&lt;script type="module" src="https://academia.tecnocooperativa.cl/kit/academia-kit.js"&gt;&lt;/script&gt;</code></pre>
+    <p>La hoja de estilos es opcional. Los componentes toman los colores de la paleta de espacio (variables <code>--esp-*</code>) si están, y si no, usan los suyos.</p>
+
+    <h2>Oscilador + perilla + osciloscopio</h2>
+    <div class="ac-laboratorio">
+      <div class="ac-controles">
+        <ac-perilla etiqueta="Pitch" min="55" max="1760" valor="220" escala="log" unidad="Hz" for="osc" atributo="frecuencia"></ac-perilla>
+        <ac-perilla etiqueta="Volumen" min="0" max="0.5" valor="0.2" for="osc" atributo="volumen"></ac-perilla>
+        <ac-opciones etiqueta="Forma de onda" for="osc" atributo="forma" valor="sine"
+          opciones="sine:Senoidal, triangle:Triangular, sawtooth:Sierra, square:Cuadrada"></ac-opciones>
+      </div>
+      <ac-oscilador id="osc"></ac-oscilador>
+      <ac-osciloscopio for="osc" ventana="20"></ac-osciloscopio>
+    </div>
+    <pre><code>&lt;ac-perilla etiqueta="Pitch" min="55" max="1760" valor="220" escala="log"
+            unidad="Hz" for="osc" atributo="frecuencia"&gt;&lt;/ac-perilla&gt;
+&lt;ac-opciones etiqueta="Forma de onda" for="osc" atributo="forma"
+            opciones="sine:Senoidal, square:Cuadrada"&gt;&lt;/ac-opciones&gt;
+&lt;ac-oscilador id="osc"&gt;&lt;/ac-oscilador&gt;
+&lt;ac-osciloscopio for="osc" ventana="20"&gt;&lt;/ac-osciloscopio&gt;</code></pre>
+
+    <h2>Referencia</h2>
+    <h3><code>&lt;ac-perilla&gt;</code></h3>
+    <p><code>etiqueta</code>, <code>min</code>, <code>max</code>, <code>valor</code>, <code>unidad</code>, <code>escala="log"</code>. Con <code>for</code> + <code>atributo</code> escribe su valor en otro elemento. Arrastrar arriba/abajo (Mayús: fino), flechas, Re Pág/Av Pág, Inicio/Fin; doble clic vuelve al valor inicial. Emite <code>input</code>.</p>
+    <h3><code>&lt;ac-oscilador&gt;</code></h3>
+    <p><code>frecuencia</code> (Hz), <code>forma</code> (<code>sine</code>, <code>square</code>, <code>sawtooth</code>, <code>triangle</code>), <code>volumen</code> (0–1). Trae su botón Tocar/Detener y muestra la nota más cercana. Métodos <code>tocar()</code> y <code>detener()</code>.</p>
+    <h3><code>&lt;ac-osciloscopio&gt;</code></h3>
+    <p><code>for</code> (id de un oscilador) o <code>frecuencia</code> + <code>forma</code> propios, y <code>ventana</code> en ms. Dibuja la onda ideal: al doble de frecuencia, el doble de ciclos.</p>
+    <h3><code>&lt;ac-opciones&gt;</code></h3>
+    <p><code>etiqueta</code>, <code>opciones="valor:Texto, …"</code>, <code>valor</code>, y <code>for</code> + <code>atributo</code>. Emite <code>change</code>.</p>
+    <h3>Utilidades</h3>
+    <p>El módulo exporta también <code>midiAHz</code>, <code>hzAMidi</code>, <code>nota</code>, <code>describirNota</code>, <code>muestra</code> y las escalas de perilla, para quien quiera armar lo suyo.</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "id": "sintesis-basica",
+  "title": "Síntesis sustractiva en VCV Rack",
+  "summary": "Fundamentos de síntesis, de la arquitectura de un sintetizador a su versión modular en VCV Rack, cable por cable.",
+  "description": "Nace de una experiencia personal: entender por fin cómo funciona un sintetizador, más allá de reconfigurar un preset, y querer devolver al mundo esa sensación. Son tres artefactos que van juntos: la guía, con los contenidos y sus imágenes (en línea o en PDF); una aplicación web con un laboratorio por capítulo para escuchar y mover cada parámetro; y zinte, un sintetizador para VCV Rack que une todos los conceptos. Doce capítulos siguen el orden de un manual de sintetizador: osciladores, mixer, filtros, envolventes, LFOs, matriz de modulación, arpegiador y efectos.",
+  "teacher": {
+    "name": "Alejandro",
+    "url": "https://aebn.cl"
+  },
+  "status": "available",
+  "formats": [
+    "web",
+    "interactive",
+    "pdf"
+  ],
+  "topics": [
+    "síntesis",
+    "sonido",
+    "VCV Rack",
+    "modular"
+  ],
+  "url": "./",
+  "cover": "portada.svg",
+  "pdf": "manual.pdf",
+  "classes": {
+    "duration": "60 min",
+    "price": "A convenir con el profe"
+  }
+}

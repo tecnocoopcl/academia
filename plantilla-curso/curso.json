@@ -1,0 +1,18 @@
+{
+  "id": "mi-curso",
+  "title": "Nombre del curso",
+  "summary": "Una o dos frases: qué se aprende y cómo.",
+  "description": "Opcional. Un párrafo más largo para la ficha del curso.",
+  "teacher": {
+    "name": "Tu nombre",
+    "webId": "https://pods-rpi-tc.aebn.cl/tu-cuenta/profile/card#me",
+    "contact": "mailto:tu-correo@ejemplo.cl",
+    "url": "https://tu-sitio.cl"
+  },
+  "status": "preparing",
+  "formats": ["web"],
+  "topics": ["tema"],
+  "url": "./",
+  "cover": "portada.svg",
+  "classes": { "duration": "60 min", "price": "A convenir" }
+}

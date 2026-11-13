@@ -1,0 +1,10 @@
+{
+  "id": "espacio",
+  "title": "Espacio, el escritorio de la cooperativa",
+  "summary": "Usar espacio y tu Solid Pod: archivos, calendario, mensajes, mini-apps y cómo publicar las tuyas.",
+  "teacher": { "name": "Tecnocooperativa" },
+  "status": "preparing",
+  "formats": ["web", "video"],
+  "topics": ["espacio", "Solid", "herramientas"],
+  "cover": "portada.svg"
+}

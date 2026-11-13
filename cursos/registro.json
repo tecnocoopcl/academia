@@ -1,0 +1,10 @@
+{
+  "$comment": "Lista curada de cursos de academia. Cada entrada es la URL de un curso.json (relativa a este archivo o absoluta, en cualquier dominio). Dar de alta un curso = PR que agrega su URL. Ver docs/ESPECIFICACION-curso.md.",
+  "courses": [
+    "sintesis-basica/curso.json",
+    "armonia-basica/curso.json",
+    "programacion-tangible/curso.json",
+    "cultura-tecnica/curso.json",
+    "espacio/curso.json"
+  ]
+}

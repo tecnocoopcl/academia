@@ -1,0 +1,12 @@
+{
+  "id": "programacion-tangible",
+  "title": "Programación tangible",
+  "summary": "De un transistor a una compuerta lógica y de ahí a la computación: armando circuitos en protoboard con un kit propio.",
+  "description": "El curso parte con un kit físico (protoboard, transistores, compuertas lógicas, LEDs) para entender con las manos la base sobre la que funciona hoy la computación.",
+  "teacher": { "name": "Alejandro" },
+  "status": "preparing",
+  "formats": ["kit", "web"],
+  "kit": "Protoboard, transistores, compuertas lógicas y LEDs. La lista y dónde conseguirla estarán en el curso.",
+  "topics": ["electrónica", "lógica", "cultura técnica"],
+  "cover": "portada.svg"
+}

@@ -1,0 +1,15 @@
+/* Lo propio de este curso, sobre academia.css. */
+.acciones { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.indice { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--esp-border); }
+.indice li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem; padding: 0.55rem 0; border-bottom: 1px solid var(--esp-border); }
+.indice a { text-decoration: none; font-weight: 600; }
+.indice a:hover { text-decoration: underline; }
+.indice .num { font-family: var(--esp-mono); font-weight: 400; font-size: 0.85rem; color: var(--esp-text-muted); margin-right: 0.75rem; }
+.indice li > span { color: var(--esp-text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.siguiente { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--esp-border); }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--esp-border); }
+td:first-child, th:first-child { padding-left: 0; }
+.prologo { margin: 0 0 2rem; padding: 0.25rem 0 0.25rem 1.25rem; border-left: 3px solid var(--esp-accent); font-size: 1.1rem; font-style: italic; }
+.prologo p { margin: 0 0 0.75rem; }
+.prologo footer { font-style: normal; font-size: 0.95rem; color: var(--esp-text-muted); }
