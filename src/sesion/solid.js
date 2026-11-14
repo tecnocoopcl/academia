@@ -1,5 +1,5 @@
 import { login, logout, handleIncomingRedirect, getDefaultSession } from '@inrupt/solid-client-authn-browser'
-import { getSolidDataset, getThing, getUrlAll } from '@inrupt/solid-client'
+import { getSolidDataset, getThing, getUrlAll, getStringNoLocale, getStringWithLocale } from '@inrupt/solid-client'
 
 // Sesión con WebID, como en música y las demás apps de la cooperativa. Sin
 // sesión academia funciona igual: el material es abierto. La sesión servirá
@@ -8,6 +8,12 @@ import { getSolidDataset, getThing, getUrlAll } from '@inrupt/solid-client'
 export const PROVEEDOR_POR_DEFECTO = 'https://pods-rpi-tc.aebn.cl'
 
 const SOLID_OIDC_ISSUER = 'http://www.w3.org/ns/solid/terms#oidcIssuer'
+const PREDICADOS_NOMBRE = [
+  'http://xmlns.com/foaf/0.1/name',
+  'http://www.w3.org/2006/vcard/ns#fn',
+  'http://xmlns.com/foaf/0.1/nick',
+  'http://www.w3.org/2006/vcard/ns#nickname',
+]
 const VOLVER_KEY = 'academia-volver-a'
 
 export function sesionActual() {
@@ -63,9 +69,33 @@ export async function desconectar() {
   await logout()
 }
 
+// Nombre para mostrar: el que declara el perfil (foaf:name, vcard:fn o un
+// apodo). Si no hay, el del pod según la URL del WebID.
+export async function nombreDelPerfil(webId) {
+  try {
+    const { fetch } = getDefaultSession()
+    const perfil = await getSolidDataset(webId, { fetch })
+    const yo = getThing(perfil, webId)
+    if (yo) {
+      for (const predicado of PREDICADOS_NOMBRE) {
+        const nombre = getStringNoLocale(yo, predicado) ?? getStringWithLocale(yo, predicado, 'es')
+        if (nombre?.trim()) return nombre.trim()
+      }
+    }
+  } catch (err) {
+    console.warn(`No se pudo leer el perfil ${webId}: ${err.message}`)
+  }
+  return nombreCorto(webId)
+}
+
+// Community Solid Server usa https://host/<pod>/profile/card#me; con pods en
+// subdominio, https://<pod>.host/profile/card#me.
 export function nombreCorto(webId) {
   try {
-    return new URL(webId).hostname
+    const url = new URL(webId)
+    const [primero] = url.pathname.split('/').filter(Boolean)
+    if (primero && primero !== 'profile') return decodeURIComponent(primero)
+    return url.hostname.split('.')[0]
   } catch {
     return webId
   }

@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { conectar, desconectar, nombreCorto, resolverProveedor, PROVEEDOR_POR_DEFECTO } from './solid.js'
+import { conectar, desconectar, nombreCorto, nombreDelPerfil, resolverProveedor, PROVEEDOR_POR_DEFECTO } from './solid.js'
 
 // Botón de la barra superior: iniciar sesión con WebID, o la cuenta y salir.
 export default function Cuenta({ sesion }) {
   const [abierto, setAbierto] = useState(false)
+  const nombre = useNombre(sesion.webId)
 
   if (sesion.conectada) {
     return (
       <div className="cuenta-sesion">
         <span className="cuenta-nombre" title={sesion.webId}>
-          {nombreCorto(sesion.webId)}
+          {nombre}
         </span>
         <button type="button" className="boton secundario chico" onClick={() => desconectar().then(() => window.location.reload())}>
           Cerrar sesión
@@ -26,6 +27,20 @@ export default function Cuenta({ sesion }) {
       {abierto && <Dialogo onClose={() => setAbierto(false)} />}
     </>
   )
+}
+
+// Muestra de inmediato el nombre del pod y lo cambia por el del perfil cuando llega.
+function useNombre(webId) {
+  const [nombre, setNombre] = useState(() => (webId ? nombreCorto(webId) : null))
+  useEffect(() => {
+    if (!webId) return
+    let vigente = true
+    nombreDelPerfil(webId).then((n) => vigente && setNombre(n))
+    return () => {
+      vigente = false
+    }
+  }, [webId])
+  return nombre
 }
 
 function Dialogo({ onClose }) {
