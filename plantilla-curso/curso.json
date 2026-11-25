@@ -5,7 +5,7 @@
   "description": "Opcional. Un párrafo más largo para la ficha del curso.",
   "teacher": {
     "name": "Tu nombre",
-    "webId": "https://pods-rpi-tc.aebn.cl/tu-cuenta/profile/card#me",
+    "webId": "https://id.tecnocooperativa.cl/tu-cuenta#me",
     "contact": "mailto:tu-correo@ejemplo.cl",
     "url": "https://tu-sitio.cl"
   },

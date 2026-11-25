@@ -5,7 +5,7 @@ import { getSolidDataset, getThing, getUrlAll, getStringNoLocale, getStringWithL
 // sesión academia funciona igual: el material es abierto. La sesión servirá
 // para pedir clases (ADR-001, fase 2).
 
-export const PROVEEDOR_POR_DEFECTO = 'https://pods-rpi-tc.aebn.cl'
+export const PROVEEDOR_POR_DEFECTO = 'https://pods.tecnocooperativa.cl'
 
 const SOLID_OIDC_ISSUER = 'http://www.w3.org/ns/solid/terms#oidcIssuer'
 const PREDICADOS_NOMBRE = [
